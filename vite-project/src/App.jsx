@@ -11,33 +11,27 @@ function App() {
   return (
     <>
       
-      <Parallax pages={3}>
+      <Parallax pages={2.5}>
       
-        <ParallaxLayer offset={0} speed={0.5}>
+        <ParallaxLayer offset={0}>
       
           <Header></Header>
       
         </ParallaxLayer>
-      
-        <ParallaxLayer offset={0.3}>
-      
-          <Body></Body>
-      
-        </ParallaxLayer>
-        
-        <ParallaxLayer offset={1.4}>
+              
+        <ParallaxLayer offset={0.25}>
       
           <Lineup/>
       
         </ParallaxLayer>
       
-        <ParallaxLayer offset={0.99} speed={1}>
+        <ParallaxLayer offset={1} speed={0.5}>
       
           <Table></Table>
       
         </ParallaxLayer>
         
-        <ParallaxLayer offset={2.5} speed={1}>
+        <ParallaxLayer offset={1.9} speed={0}>
       
           <Footer></Footer>
       
