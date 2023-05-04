@@ -4,7 +4,6 @@ import { Parallax, ParallaxLayer } from '@react-spring/parallax';
 import Table from './assets/Table';
 import Body from './assets/Body';
 import Footer from './assets/Footer';
-import Lineup from './assets/Lineup';
 
 
 function App() {
@@ -21,7 +20,6 @@ function App() {
               
         <ParallaxLayer offset={0.25}>
       
-          <Lineup/>
       
         </ParallaxLayer>
       

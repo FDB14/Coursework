@@ -9,16 +9,15 @@ const options = {
 function fetchPlayerData(page){
         //fetch player data (page is a changing variable with a recursive function)
         fetch(`https://api-football-v1.p.rapidapi.com/v3/players?league=39&season=2022&page=${page}`, options)
-        .then(response => response.json())      
+        .then(response => response.json())
         .then(response => {
             if(page <= response.paging.total){
-                
-                console.log(response)
-
+                let answer = response.response[1]
+                console.log(answer)
                 setTimeout(() => fetchPlayerData(page + 1), 5000)
         }})
         .catch(err => console.error(err))
-    }
+}
 
-//call fetch function (argument corresponds to the first page)
+//call fetch function (argument corresponds to the starting page)
 fetchPlayerData(1)

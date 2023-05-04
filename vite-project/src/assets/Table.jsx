@@ -1,7 +1,7 @@
 import * as React from 'react';
 import mockData from './MOCK_DATA.json'
 import { DataGrid, GridToolbarQuickFilter} from '@mui/x-data-grid'
-import Lineup from './Lineup.jsx'
+import player_model from './player_model'
 
 function Table() {
 
@@ -42,6 +42,15 @@ function Table() {
               const selectedRowData = itm.map((id) => mockData.find((row) => row.id === id))
 
               console.log(selectedRowData);
+
+              const pickedPlayer = {
+                playerID : selectedRowData[0].id,
+                playerName : selectedRowData[0].player_name,
+                playerGoals : selectedRowData[0].goals,
+                playerAssists : selectedRowData[0].assists
+              }
+
+              console.log(pickedPlayer.playerAssists)
 
               document.getElementById("type").innerHTML = "Lineup Saved 👍"
               document.getElementById("type").style.color = "green"
