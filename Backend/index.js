@@ -12,6 +12,7 @@ function fetchPlayerData(page){
         .then(response => response.json())
         .then(response => {
             function playerData(){
+                //need recursion to sorth through players in the page as well 😞
                     let answer = response.response[1]
                     let currentPage = response.paging.current
                     let lastPage = response.paging.total    
