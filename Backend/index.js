@@ -6,19 +6,32 @@ const options = {
     }
 };
 
+//used for getting the current season, (seasons start and end midway through the year)
+function getSeason(){
+    let day = new Date()
+    if(day.getMonth() >= 6){
+        return day.getFullYear()
+    }else{
+        return (day.getFullYear()-1)
+    }
+}
+
 function fetchPlayerData(page){
         //fetch player data (page is a changing variable with a recursive function)
-        fetch(`https://api-football-v1.p.rapidapi.com/v3/players?league=39&season=2022&page=${page}`, options)
+        fetch(`https://api-football-v1.p.rapidapi.com/v3/players?league=39&season=${getSeason()}&page=${page}`, options)
         .then(response => response.json())
         .then(response => {
-            function playerData(){
-                //need recursion to sorth through players in the page as well 😞
-                    let answer = response.response[1]
-                    let currentPage = response.paging.current
-                    let lastPage = response.paging.total    
-                    return [answer, currentPage, lastPage]
+            // rather than using a for loop, use a forEach() method. 
+            function playerData(){                
+                    let array = response.response
+
+                    array.forEach(function(elem){
+                        return elem
+                    })
                 }
-            return playerData()
+                let currentPage = response.paging.current
+                let lastPage = response.paging.total
+                return [playerData(), currentPage, lastPage]
         })
         .then(response => {
             const object = {
