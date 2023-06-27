@@ -39,41 +39,32 @@ function fetchPlayerData(page){
                 for(let i = 0; i < 20; i++){
                     if (typeof response.response[i] !== 'undefined'){
                         numberSelected = response.response[i]
+                    }else{
+                        return
                     }
+
+                const object = {
+                    id : numberSelected.player.id, 
+                    playerName : numberSelected.player.name,
+                    playerLast : numberSelected.player.lastname,
+                    age : numberSelected.player.age,
+                    nationality : numberSelected.player.nationality,
+                    height : numberSelected.player.height
                 }
-                return [numberSelected , currentPage, lastPage]
-        })
-        .then(response => {
-            const object = {
-                id : response[0].player.id, 
-                playerName : response[0].player.name,
-                playerLast : response[0].player.lastname,
-                age : response[0].player.age,
-                nationality : response[0].player.nationality,
-                height : response[0].player.height
+
+                client.query(`INSERT INTO playersmain (id, playerName, playerlast, age, nationality, height) VALUES (${object.id},'${object.playerName}', '${object.playerLast}', '${object.age}' ,'${object.nationality}', '${object.height}');`, (err, res)=>{
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log("successfully connected 👌")
+                    }
+                    client.end
+                })
             }
-            currentPage = response[1]
-            lastPage = response[2]
-            return [object, currentPage, lastPage]
+                return [currentPage, lastPage]
         })
         .then(response => {
-
-            client.query(`INSERT INTO playersmain (id, playerName, playerlast, age, nationality, height) VALUES (${response[0].id},'${response[0].playerName}', '${response[0].playerLast}', '${response[0].age}' ,'${response[0].nationality}', '${response[0].height}');`, (err, res)=>{
-                if(err){
-                    console.log(err);
-                }else{
-                    console.log("successfully connected 👌")
-                }
-                client.end
-            })
-
-            console.log(response[0])
-            currentPage = response[1]
-            lastPage = response[2]
-            return [currentPage, lastPage]
-        })
-        .then(response => {
-            if(response[0] <= response[1]){
+            if(response[0] <= response[1] -1){
                 setTimeout(() => fetchPlayerData(page + 1), 5000)
             }
         })
