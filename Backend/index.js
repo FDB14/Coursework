@@ -1,3 +1,15 @@
+const {Client} = require('pg')
+
+const client = new Client({
+    host : "localhost",
+    user : "admin",
+    port : 5432,
+    password : "root",
+    database : "mainconnection"
+})
+
+client.connect();
+
 const options = {
     method: 'GET',
     headers: {
@@ -9,7 +21,7 @@ const options = {
 //used for getting the current season, (seasons start and end midway through the year)
 function getSeason(){
     let day = new Date()
-    if(day.getMonth() >= 6){
+    if(day.getMonth() >= 7){
         return day.getFullYear()
     }else{
         return (day.getFullYear()-1)
@@ -21,17 +33,15 @@ function fetchPlayerData(page){
         fetch(`https://api-football-v1.p.rapidapi.com/v3/players?league=39&season=${getSeason()}&page=${page}`, options)
         .then(response => response.json())
         .then(response => {
-            // rather than using a for loop, use a forEach() method. 
-            function playerData(){                
-                    let array = response.response
-
-                    array.forEach(function(elem){
-                        return elem
-                    })
-                }
                 let currentPage = response.paging.current
                 let lastPage = response.paging.total
-                return [playerData(), currentPage, lastPage]
+                let numberSelected = null;
+                for(let i = 0; i < 20; i++){
+                    if (typeof response.response[i] !== 'undefined'){
+                        numberSelected = response.response[i]
+                    }
+                }
+                return [numberSelected , currentPage, lastPage]
         })
         .then(response => {
             const object = {
@@ -47,6 +57,16 @@ function fetchPlayerData(page){
             return [object, currentPage, lastPage]
         })
         .then(response => {
+
+            client.query(`INSERT INTO playersmain (id, playerName, playerlast, age, nationality, height) VALUES (${response[0].id},'${response[0].playerName}', '${response[0].playerLast}', '${response[0].age}' ,'${response[0].nationality}', '${response[0].height}');`, (err, res)=>{
+                if(err){
+                    console.log(err);
+                }else{
+                    console.log("successfully connected 👌")
+                }
+                client.end
+            })
+
             console.log(response[0])
             currentPage = response[1]
             lastPage = response[2]
