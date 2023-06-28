@@ -35,31 +35,67 @@ function fetchPlayerData(page){
         .then(response => {
                 let currentPage = response.paging.current
                 let lastPage = response.paging.total
-                let numberSelected = null;
+                let playerSelected = null;
                 for(let i = 0; i < 20; i++){
                     if (typeof response.response[i] !== 'undefined'){
-                        numberSelected = response.response[i]
+                        playerSelected = response.response[i]
                     }else{
                         return
                     }
 
-                const object = {
-                    id : numberSelected.player.id, 
-                    playerName : numberSelected.player.name,
-                    playerLast : numberSelected.player.lastname,
-                    age : numberSelected.player.age,
-                    nationality : numberSelected.player.nationality,
-                    height : numberSelected.player.height
+                const playerObject = {
+                    id : playerSelected.player.id, 
+                    playerName : playerSelected.player.name,
+                    playerLast : playerSelected.player.lastname,
+                    age : playerSelected.player.age,
+                    nationality : playerSelected.player.nationality,
+                    height : playerSelected.player.height,
                 }
 
-                client.query(`INSERT INTO playersmain (id, playerName, playerlast, age, nationality, height) VALUES (${object.id},'${object.playerName}', '${object.playerLast}', '${object.age}' ,'${object.nationality}', '${object.height}');`, (err, res)=>{
+                const statObject = {
+                    team : playerSelected.statistics[0].team.name,
+                    teamicon : playerSelected.statistics[0].team.logo,
+                    appearences : playerSelected.statistics[0].games.appearences,
+                    minutes : playerSelected.statistics[0].games.minutes,
+                    rating : playerSelected.statistics[0].games.rating,
+                    goals : playerSelected.statistics[0].goals.total,
+                    assists : playerSelected.statistics[0].goals.assists,
+                    conceded : playerSelected.statistics[0].goals.conceded,
+                    passes : playerSelected.statistics[0].passes.total,
+                    tackles : playerSelected.statistics[0].tackles.total,
+                    duelswon: playerSelected.statistics[0].duels.won,
+                    dribbles : playerSelected.statistics[0].dribbles.success,
+                    foulswon : playerSelected.statistics[0].fouls.drawn,
+                    fouls : playerSelected.statistics[0].fouls.committed,
+                    yellow : playerSelected.statistics[0].cards.yellow,
+                    yellowred : playerSelected.statistics[0].cards.yellowred,
+                    red : playerSelected.statistics[0].cards.red,
+                    penwon : playerSelected.statistics[0].penalty.won,
+                    pencommited : playerSelected.statistics[0].penalty.commited,
+                    penscored : playerSelected.statistics[0].penalty.scored,
+                    penmissed : playerSelected.statistics[0].penalty.missed,
+                }
+
+                console.log(statObject)
+
+                client.query(`INSERT INTO playerstats(id, team, teamicon, appearences, minutes, rating, goals, assists, conceded, passes, tackles, duelswon, dribbles, foulswon, fouls, yellow, yellowred, red, penwon, pencommited, penscored, penmissed) VALUES (${playerObject.id},'${statObject.team}', '${statObject.teamicon}', ${statObject.appearences}, ${statObject.minutes} , ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penscored});`, (err, res)=>{
                     if(err){
                         console.log(err);
                     }else{
-                        console.log("successfully connected 👌")
+                        console.log("player statistics successfully inserted 👌")
                     }
                     client.end
                 })
+                           
+                client.query(`INSERT INTO playersmain (id, playerName, playerlast, age, nationality, height) VALUES (${playerObject.id},'${playerObject.playerName}', '${playerObject.playerLast}', '${playerObject.age}' ,'${playerObject.nationality}', '${playerObject.height}');`, (err, res)=>{
+                    if(err){
+                        console.log(err);
+                    }else{
+                        console.log("player information successfully inserted 👌")
+                    }
+                    client.end
+                })
+
             }
                 return [currentPage, lastPage]
         })
