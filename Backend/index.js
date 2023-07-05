@@ -76,7 +76,7 @@ function fetchPlayerData(page){
                     penmissed : playerSelected.statistics[0].penalty.missed,
                 }
 
-                console.log(statObject)
+                console.log(statObject.appearences)
 
                 client.query(`INSERT INTO playerstats(id, team, teamicon, appearences, minutes, rating, goals, assists, conceded, passes, tackles, duelswon, dribbles, foulswon, fouls, yellow, yellowred, red, penwon, pencommited, penscored, penmissed) VALUES (${playerObject.id},'${statObject.team}', '${statObject.teamicon}', ${statObject.appearences}, ${statObject.minutes} , ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penscored});`, (err, res)=>{
                     if(err){
