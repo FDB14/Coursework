@@ -76,15 +76,16 @@ function fetchPlayerData(page){
                     penmissed : playerSelected.statistics[0].penalty.missed,
                 }
 
-
-                client.query(`INSERT INTO playerstats(id, team, teamicon, appearences, minutes, rating, goals, assists, conceded, passes, tackles, duelswon, dribbles, foulswon, fouls, yellow, yellowred, red, penwon, pencommited, penscored, penmissed) VALUES (${playerObject.id},'${statObject.team}', '${statObject.teamicon}', ${statObject.appearences}, ${statObject.minutes} , ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penscored}) ON CONFLICT(id) DO UPDATE SET () ;`, (err, res)=>{
+                client.query(`INSERT INTO playersmain VALUES (${playerObject.id},'${playerObject.playerName}', '${playerObject.playerLast}', ${playerObject.age},'${playerObject.nationality}', '${playerObject.height}','${statObject.team}', '${statObject.teamicon}', ${statObject.appearances}, ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penmissed}, ${statObject.minutes});`, (err, res)=>{
                     if(err){
                         console.log(err);
                     }else{
-                        console.log("player information successfully inserted 👌")
+                        console.log(`player information successfully inserted 👌 ${i+1} ${res}`)
                     }
                     client.end
                 })
+
+                client.query(`UPDATE playersmain SET minutes = ${statObject.minutes} WHERE `)
 
             }
                 return [currentPage, lastPage]
