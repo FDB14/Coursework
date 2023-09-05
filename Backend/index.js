@@ -85,8 +85,6 @@ function fetchPlayerData(page){
                     client.end
                 })
 
-                client.query(`UPDATE playersmain SET minutes = ${statObject.minutes} WHERE `)
-
             }
                 return [currentPage, lastPage]
         })
