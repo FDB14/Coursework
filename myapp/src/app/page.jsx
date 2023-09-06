@@ -1,4 +1,6 @@
-const {Client} = require('pg')
+import { error } from "console";
+const {Client} = require('pg');
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 const client = new Client({
   host : "localhost",
@@ -8,30 +10,33 @@ const client = new Client({
   database : "mainconnection"
 })
 
+client.connect()
+
 let temp = client.query(`SELECT playername FROM playersmain;`)
             .then((result) => {return (result.rows)})
             .then(result => {return JSON.stringify(result)})
-
-client.connect();
-
-let targetofgreeting = 'hello'
+            .then(result => {return result.replaceAll(/[^a-zA-Z0-9ãćØéáíóúüñäöß]/g, " ")})
+            .then(result => {return result.replaceAll('playername', '')})
+            .catch(error => console.log(error))
+            .finally(() => client.end)
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className='font-mono text-5xl font-bold'>FantasyFootball</div>
+      <link rel="stylesheet" href="src\app\styles.css"/>
+      <div className='font-mono text-4xl font-bold'>FantasyFootball</div>
       <div>
-        <a href="/login">Sign In</a>
+        <a href="/login" className="font-mono font-semibold hover:opacity-50 hover:transition">Sign In</a>
       </div>
       <div>
-        <a href='/signup'>Sign Up</a>
+        <a href='/signup' className="font-mono font-semibold hover:opacity-50 hover:transition">Sign Up</a>
       </div>
-      <div className="bg-white p-5 text-black rounded-md">
-        <img src=''>
-          {temp}
-        </img>
+      <div className="font-mono text-white w-10/12 animate-marquee truncate overflow-hidden">{temp}
       </div>
     </main>
   )
 }
+
+
+
 
