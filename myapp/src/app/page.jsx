@@ -1,6 +1,7 @@
 import { error } from "console";
 const {Client} = require('pg');
-import { useUser } from "@auth0/nextjs-auth0/client";
+import Link from "next/link";
+import NavBar from './components/NavBar'
 
 const client = new Client({
   host : "localhost",
@@ -12,7 +13,7 @@ const client = new Client({
 
 client.connect()
 
-let temp = client.query(`SELECT playername FROM playersmain;`)
+let playersNames = client.query(`SELECT playername FROM playersmain;`)
             .then((result) => {return (result.rows)})
             .then(result => {return JSON.stringify(result)})
             .then(result => {return result.replaceAll(/[^a-zA-Z0-9ãćØéáíóúüñäöß]/g, " ")})
@@ -22,16 +23,12 @@ let temp = client.query(`SELECT playername FROM playersmain;`)
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-primary">
       <link rel="stylesheet" href="src\app\styles.css"/>
       <div className='font-mono text-4xl font-bold'>FantasyFootball</div>
-      <div>
-        <a href="/login" className="font-mono font-semibold hover:opacity-50 hover:transition">Sign In</a>
-      </div>
-      <div>
-        <a href='/signup' className="font-mono font-semibold hover:opacity-50 hover:transition">Sign Up</a>
-      </div>
-      <div className="font-mono text-white w-10/12 animate-marquee truncate overflow-hidden">{temp}
+      <NavBar></NavBar>
+      <div className="bg-white/70 shadow-inner text-center">
+        <p className="font-mono">{playersNames}</p>
       </div>
     </main>
   )
