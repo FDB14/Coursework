@@ -11,7 +11,7 @@ const Login = () => {
             {!isLoading && !user &&(
                 <Link
                 href="/api/auth/login"
-                className='font-bold p-5 text-3xl font-sans'
+                className='font-bold p-5 text-3xl font-sans animate-pulse'
                 >
                 login
                 </Link>
