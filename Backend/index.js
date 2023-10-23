@@ -50,6 +50,7 @@ function fetchPlayerData(page){
                     age : playerSelected.player.age,
                     nationality : playerSelected.player.nationality,
                     height : playerSelected.player.height,
+
                 }
 
                 const statObject = {
@@ -74,9 +75,10 @@ function fetchPlayerData(page){
                     pencommited : playerSelected.statistics[0].penalty.commited,
                     penscored : playerSelected.statistics[0].penalty.scored,
                     penmissed : playerSelected.statistics[0].penalty.missed,
+                    position : playerSelected.statistics[0].games.position,    
                 }
 
-                client.query(`INSERT INTO playersmain VALUES (${playerObject.id},'${playerObject.playerName}', '${playerObject.playerLast}', ${playerObject.age},'${playerObject.nationality}', '${playerObject.height}','${statObject.team}', '${statObject.teamicon}', ${statObject.appearances}, ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penmissed}, ${statObject.minutes});`, (err, res)=>{
+                client.query(`INSERT INTO playersmain VALUES (${playerObject.id},'${playerObject.playerName}', '${playerObject.playerLast}', ${playerObject.age},'${playerObject.nationality}', '${playerObject.height}','${statObject.team}', '${statObject.teamicon}', ${statObject.appearances}, ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penmissed}, ${statObject.minutes}, '${statObject.position}');`, (err, res)=>{
                     if(err){
                         console.log(err);
                     }else{
