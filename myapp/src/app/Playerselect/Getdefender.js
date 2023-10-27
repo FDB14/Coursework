@@ -1,4 +1,6 @@
 const {Client} = require('pg')
+const { error } = require('console');
+const { writeFileSync } = require('fs');
 
 const client = new Client({
     host : "localhost",
@@ -13,7 +15,7 @@ client.connect();
 
 async function Defenders(){
     try{
-        let response = await client.query(`SELECT id, playerlast, nationality, age, height FROM playersmain WHERE position = 'Defender';`)
+        let response = await client.query(`SELECT id, playername, playerlast, nationality, age, height, minutes, goals, assists, rating FROM playersmain WHERE position = 'Defender';`)
         return response
     }
     catch(error){
@@ -22,8 +24,8 @@ async function Defenders(){
 
 }
 
-export default Defenders().then(responses =>
-    responses.rows
-);
 
+const path = './test.json';
 
+Defenders().then(response => {return JSON.stringify(response.rows)})
+.then(response => {writeFileSync(path, response, 'utf-8')})
