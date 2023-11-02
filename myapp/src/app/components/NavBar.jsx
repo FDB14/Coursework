@@ -4,7 +4,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 
 const NavBar = () => {
-    const { user, isLoading } = useUser()
+    const { user } = useUser()
 
     return(
         <div>

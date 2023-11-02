@@ -10,6 +10,7 @@ const DefenderRowSelected = ({defender}) => {
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
         </tr>
     )
 }

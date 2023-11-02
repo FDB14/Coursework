@@ -3,20 +3,6 @@ import DefenderTable from "../components/DefenderTable"
 import Defenders from "./test.json"
 import { redirect } from "next/dist/server/api-utils"
 
-const {Client} = require('pg')
-
-
-const client = new Client({
-    host : "localhost",
-    user : "admin",
-    port : 5432,
-    password : "root",
-    database : "mainconnection"
-})
-
-client.connect();
-client.end()
-
 export default async function Playerselect() {
 
     function quickSort(arr){

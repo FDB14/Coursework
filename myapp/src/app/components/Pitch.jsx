@@ -11,8 +11,8 @@ const Pitch = () => {
             {user && (
                 <div>
                     <div className='flex flex-row pl-20'>
-                        <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center'>
-                            <div className='bg-teal-500 text-white rounded-t-md font-bold'>fwd</div>
+                        <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center font-bold'>
+                            <div className='bg-teal-500 text-white rounded-t-md'>fwd</div>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center font-bold'>
                             <div className='bg-teal-500 text-white rounded-t-md'>fwd</div>
@@ -33,10 +33,6 @@ const Pitch = () => {
                         </div>
                     </div>
                     <div className='flex flex-row'>
-                    <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center font-bold hover:cursor-pointer'>
-                            <div className='bg-fuchsia-500 text-white rounded-t-md'>def</div>
-                            <a className='text-3xl' href='/playerselect'>+</a>
-                        </div>
                         <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center font-bold hover:cursor-pointer'>
                             <div className='bg-fuchsia-500 text-white rounded-t-md'>def</div>
                             <a className='text-3xl' href='/playerselect'>+</a>
@@ -45,7 +41,10 @@ const Pitch = () => {
                             <div className='bg-fuchsia-500 text-white rounded-t-md'>def</div>
                             <a className='text-3xl' href='/playerselect'>+</a>
                         </div>
-                        
+                        <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center font-bold hover:cursor-pointer'>
+                            <div className='bg-fuchsia-500 text-white rounded-t-md'>def</div>
+                            <a className='text-3xl' href='/playerselect'>+</a>
+                        </div>
                         <div className='w-36 h-48 rounded-md m-2 bg-white text-black text-center font-bold hover:cursor-pointer'>
                             <div className='bg-fuchsia-500 text-white rounded-t-md'>def</div>
                             <a className='text-3xl' href='/playerselect'>+</a>

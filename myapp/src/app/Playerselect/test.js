@@ -1,4 +1,17 @@
-let Defenders = [{'rating':9.11, 'shush' : 'hello'}, {'rating' : 9.45}, {'rating' : 3498}]
-
-console.log(Defenders['rating'])
+function quickSort(arr){
+    if(arr.length < 2){
+        return arr
+    }
+    let pivot = arr[arr.length - 1]
+    let right = []
+    let left = []
+    for(let i = 0; i < arr.length -1; i++){
+        if(arr[i] <= pivot){
+            left.push(arr[i])
+        }else{
+            right.push(arr[i])
+        }
+    }
+    return[...quickSort(left), pivot, ...quickSort(right)]
+}
 
