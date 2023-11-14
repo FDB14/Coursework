@@ -25,9 +25,10 @@ const Login = () => {
                     >
                     </img>
                     {user.name &&(
-                        <p className='text-white py-2'>{user.name}</p>
+                        <p className='text-white py-2'>{user.email}</p>
                     )
                     }
+                    <p>{user.email}</p>
                     <Link href="/api/auth/logout" className='font-bold'>logout</Link>
                 </div>
                 

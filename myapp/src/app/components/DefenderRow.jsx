@@ -1,4 +1,5 @@
-const DefenderRow = ({defender, handleClick}) => {
+function DefenderRow({defender, handleClick}) {
+        
     return(
         <tr className="outline-1 outline">
             <td className="py-1 px-1">{defender.playername}</td>
@@ -11,12 +12,10 @@ const DefenderRow = ({defender, handleClick}) => {
             <td className="px-4">{defender.team}</td>
             <td className="px-2">{defender.rating === 0 ? 'null' : Math.round(defender.rating * 10)}</td>
             <td className="px-2">
-                <button className="bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold py-1 px-2 rounded" onClick={() => handleClick(defender)}><a href="/squad">Choose</a></button>
+                <button className="bg-blue-500 hover:bg-blue-700 text-xs text-white font-bold py-1 px-2 rounded" onClick={() => handleClick(defender)}>Choose</button>
             </td>
         </tr>
     )
 }  
-
-
 
 export default DefenderRow
