@@ -2,9 +2,35 @@
 
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
-const Pitch = () => {
-    const { user, isLoading } = useUser()
+function Pitch() {
+
+    const { user, error, isLoading } = useUser();
+
+    useEffect(() => {
+        fetch("http://localhost:8383/team").then(
+            response => response.json()
+        ).then(
+            data => {
+                console.log(data)
+            }
+        )
+    }, [])
+    
+
+    fetch('http://localhost:8383/team',
+    {
+        method : 'POST',
+        headers : {
+            "Content-Type" : 'application/json'
+        },
+        body: JSON.stringify({
+            package : user,
+        }
+        )
+    }
+    )
 
     return(
         <div>

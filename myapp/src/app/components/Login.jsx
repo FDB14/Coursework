@@ -8,6 +8,10 @@ const Login = () => {
 
     return(
         <div>
+            {isLoading &&(
+                <div className='animate-pulse text-blue-800 font-bold'>...loading</div>
+            )
+            }
             {!isLoading && !user &&(
                 <Link
                 href="/api/auth/login"
@@ -25,10 +29,10 @@ const Login = () => {
                     >
                     </img>
                     {user.name &&(
-                        <p className='text-white py-2'>{user.email}</p>
+                        <p className='text-white py-2'>{user.name}</p>
                     )
                     }
-                    <p>{user.email}</p>
+                    
                     <Link href="/api/auth/logout" className='font-bold'>logout</Link>
                 </div>
                 
