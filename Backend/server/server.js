@@ -18,23 +18,11 @@ app.use(express.json())
 
 app.listen(port, () => console.log(`server has started on port: ${port}`))
 
-app.post('/team', (req, res) => {
-    const package = req.body.package.sub
-    console.log(package)
-})
-
 app.get('/team', async (req, res) => {
     const data = await Send_Players_Team()
-    console.log(data)
-    res.status(200).json({data : data})
+    res.status(200).json({data : (data)})
 })
-
-let obj = JSON.parse(fs.readFileSync('../test.json', 'utf8'));
  
-app.get('/info', (req, res) => {
-    res.status(200).json({data : obj});
-});
-
 app.post('/', (req, res) => {
     const {package} = req.body
     if (!package){
@@ -42,6 +30,35 @@ app.post('/', (req, res) => {
     }
     res.status(200).send({status: 'recieved'})
     Send_Team_Info(package)
+})
+
+app.get('/getdefender', async(req, res) => {
+    let obj = await Get_Players_From_Db('Defender')
+    res.status(200).json({data : obj})
+})
+
+app.get('/getmidfield', async(req, res) => {
+    let obj = await Get_Players_From_Db('Midfielder')
+    res.status(200).json({data : obj})
+})
+
+app.get('/getgoalkeeper', async(req, res) => {
+    let obj = await Get_Players_From_Db('Goalkeeper')
+    res.status(200).json({data : obj})
+})
+
+app.get('/getforward', async(req, res) => {
+    let obj = await Get_Players_From_Db('Attacker')
+    res.status(200).json({data : obj})
+})
+
+app.post('/getid', (req, res) => {
+    const {package} = req.body
+    if (!package){
+        return res.status(400).send({status : 'failed'})
+    }
+    res.status(200).send({status: 'recieved'})
+    console.log(package.sub)
 })
 
 client.connect()
@@ -62,16 +79,26 @@ async function Send_Team_Info(package){
     try{
         let response = await client.query(`INSERT INTO userteam(player_id, user_id) VALUES(${Number(package.playerId)}, ${(Get_User_Id(package))});`)
 
-        let res = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 4);`)
-
-        res.rows.map((players) => (
-            console.log(players.position)
-        ))
-        
+        let res = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 4 AND position = 'Defender');`)
         if(res.rowCount > 4){
-            let foo = await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res.rows[0].player_id} AND position = 'Defender';`)
+            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res.rows[0].player_id} AND position = 'Defender';`)
+        }
+
+        let res1 = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 1 AND position = 'Goalkeeper');`)
+        if(res1.rowCount > 1){
+            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res1.rows[0].player_id} AND position = 'Goalkeeper';`)
+        }
+
+        let res2 = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Midfielder');`)
+        if(res2.rowCount > 3){
+            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res2.rows[0].player_id} AND position = 'Midfielder';`)
         }
         
+        let res3 = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Attacker');`)
+        if(res3.rowCount > 3){
+            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res3.rows[0].player_id} AND position = 'Attacker';`)
+        }
+
         return response
     }
     catch(error){
@@ -87,5 +114,14 @@ async function Send_Players_Team(){
     }
     let foo = response.rows
     return foo
+}
+
+async function Get_Players_From_Db(position){
+    try{
+        var response = await client.query(`SELECT id, playername, playerlast, nationality, age, height, minutes, goals, assists, rating, team FROM playersmain WHERE position = '${position}';`)
+    }catch(error){
+        console.error(`Error: ${error}`)
+    }
+    return (response.rows)
 }
 

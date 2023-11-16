@@ -11,7 +11,7 @@ const NavBar = () => {
             {user && (
                 <div className='flex font-bold text-lg flex-row align-middle'>
                     <Link href='/' className='mx-5 active:cursor-progress'>Home</Link>
-                    <Link className='mx-5 active:cursor-progress' href='/squad'>Team</Link>
+                    <a className='mx-5 active:cursor-progress' href='/squad'>Team</a>
                     <Link className='mx-5 active:cursor-progress' href='/score'>Score</Link>
                 </div>
             )}

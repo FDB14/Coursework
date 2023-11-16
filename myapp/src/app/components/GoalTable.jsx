@@ -10,7 +10,7 @@ function Playerselect() {
     const [defender, setDefender] = useState([{"id":0,"playername":"","playerlast":"","nationality":"","age": null,"height":"","minutes":null,"goals":null,"assists":null,"rating":null,"team":""}])
 
     useEffect(() => {
-        fetch("http://localhost:8383/getdefender").then(
+        fetch("http://localhost:8383/getgoalkeeper").then(
             response => response.json()
         ).then(
             data => {
