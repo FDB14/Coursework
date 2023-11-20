@@ -9,6 +9,10 @@ const config: Config = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
+    fontFamily: {
+      display: ['Source Serif Pro', 'Georgia', 'serif'],
+      body: ['Synonym', 'system-ui', 'sans-serif'],
+    },
     colors: {
       primary: '#7eaf34',
       ...colors

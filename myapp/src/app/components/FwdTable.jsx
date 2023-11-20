@@ -7,7 +7,7 @@ function Playerselect() {
   
     const { user, error, isLoading } = useUser();
 
-    const [defender, setDefender] = useState([{"id":0,"playername":"","playerlast":"","nationality":"","age": null,"height":"","minutes":null,"goals":null,"assists":null,"rating":null,"team":""}])
+    const [defender, setDefender] = useState([{"id": 0,"playername":"","playerlast":"","nationality":"","age": null,"height":"","minutes":null,"goals":null,"assists":null,"rating":null,"team":""}])
 
     useEffect(() => {
         fetch("http://localhost:8383/getforward").then(
