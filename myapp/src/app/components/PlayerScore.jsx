@@ -24,7 +24,11 @@ function PlayerScore() {
     })
 
     return(
-        <div className='font-extrabold text-7xl shadow-xl backdrop-blur-2xl'>{score}</div>
+        <div className='flex flex-col'>
+            <div className='text-center'>You Have Won</div>
+            <div className='slashed-zero font-extrabold text-7xl shadow-xl backdrop-blur-2xl text-center'>{score}</div>
+            <div className='text-center'>Points</div>
+        </div>
     )
 }
 

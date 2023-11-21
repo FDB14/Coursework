@@ -37,14 +37,37 @@ function Playerselect() {
         return[...quickSort(left), pivot, ...quickSort(right)]
     }
 
-    const handleClick = (defender) => {
+    const handleClick =  async(defender) => {
         let full_json = {playerId : defender.id, userId : user.sub}
-        makeRequest(full_json)
+        let status = await makeRequest(full_json)
+        console.log(status)
+        let foo = await status.status
+        if(foo == 'recieved'){
+            Update_User_Credit({rating : defender.rating})
+        }else{
+            return
+        }
     }
-
     async function makeRequest(parcel){
         if(parcel == ''){ return }
         const res = await fetch('http://localhost:8383/',
+        {
+            method : 'POST',
+            headers : {
+                "Content-Type" : 'application/json'
+            },
+            body: JSON.stringify({
+                package : parcel,
+            }
+            )
+        }
+        )
+        return (res.json())
+    }
+
+    async function Update_User_Credit(parcel){
+        if(parcel == ''){ return }
+        const res = await fetch('http://localhost:8383/usercredit',
         {
             method : 'POST',
             headers : {

@@ -22,8 +22,8 @@ app.post('/team', async (req, res) => {
     const {package} =  await req.body
     const user_id = await Get_User_Id(package)
     const data = await Send_Players_Team(user_id)
-    console.log(data)
-    res.json({data : data})
+    const user_credit = await Get_User_Credit(user_id)
+    res.json({data : data, credit : user_credit})
 })
 
 app.post('/delete', async(req, res) => {
@@ -34,15 +34,20 @@ app.post('/delete', async(req, res) => {
     res.status(200).send({status: 'recieved'})
     let userId = await Get_User_Id(package)
     await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${package.player_id} AND user_id = '${userId}';`)
+    await client.query(`UPDATE useraccount SET user_credit = user_credit + ${Math.round(package.player_cost * 10)} WHERE auth0_id = '${userId}';`)
 })
  
-app.post('/', (req, res) => {
+app.post('/', async(req, res) => {
     const {package} = req.body
-    if (!package){
-        return res.status(400).send({status : 'failed'})
+    if(!package){
+        res.status(400).send({status : 'invalid'})
     }
-    res.status(200).send({status: 'recieved'})
-    Send_Team_Info(package)
+    const foo = await Send_Team_Info(package)
+    if(foo){
+        res.status(200).send({status: 'recieved'})
+    }else{
+        res.status(200).send({status : 'false'})
+    }
 })
 
 app.get('/getdefender', async(req, res) => {
@@ -78,7 +83,24 @@ app.get('/teamscore', async (req, res) => {
     res.status(200).json({data : data})
 })
 
+app.post('/usercredit', (req, res) => {
+    const {package} = req.body
+    const player_cost = Math.round(package.rating * 10)
+    Update_User_Credit(player_cost)
+    if(!package){
+        return res.status(400).send({status : 'failed'})
+    }
+})
+
 client.connect()
+
+function Update_User_Credit(cost){
+    if(cost > 20){
+        let response = client.query(`UPDATE useraccount SET user_credit = user_credit - ${cost} WHERE userid = 25;`)
+    }else{
+        client.query(`UPDATE useraccount SET user_credit = user_credit - 20 WHERE userid = 25;`)
+    }
+}
 
 function Get_User_Id(package){
     let userId = (package.userId)
@@ -166,4 +188,13 @@ async function calc_score(){
     })
     console.log(score)
     return(Math.round(score))
+}
+
+async function Get_User_Credit(user_id){
+    try{
+        var res = await client.query(`SELECT user_credit FROM useraccount WHERE auth0_id = '${user_id}'`)
+    }catch(error){
+        console.error(error)
+    }
+    return res.rows
 }
