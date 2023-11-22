@@ -1,11 +1,18 @@
+'use client'
+
 import NavBar1 from "../components/NavBar1"
 import Pitch from '../components/Pitch'
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 export default function Squad() {
 
+    const { user, error, isLoading } = useUser();
+
+
     return( 
-        <html>
-            <body id="one" className="flex min-h-screen flex-col items-center p-12 bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-gray-900 to-gray-600">
+        <div>
+        {!isLoading &&(
+        <body id="one" className="flex min-h-screen flex-col items-center p-12 bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-gray-900 to-gray-600">
                 <NavBar1></NavBar1>
                 <div className="h-screen">
                     <div className="p-16">
@@ -21,8 +28,10 @@ export default function Squad() {
                     </div>
                 </div>
                 <div id="two" className="p-2"></div>
-                <Pitch></Pitch>
+                    <Pitch id={user.sub}/>
             </body>
-        </html>
+          )} 
+          </div>
+
     )
 }
