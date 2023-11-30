@@ -12,7 +12,7 @@ export const metadata = {
 
 export default function DashboardLayout({children}) {
   return (
-      <html>
+      <html className='font-Inter'>
         <UserProvider>
           <body>{children}</body>
         </UserProvider>

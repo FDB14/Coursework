@@ -43,7 +43,7 @@ function Playerselect() {
         let foo = await status.status
         console.log(foo)
         if(foo == 'recieved'){
-            Update_User_Credit({rating : defender.rating})
+            Update_User_Credit({rating : defender.rating, userId : user.sub})
         }else{
             return
         }
@@ -82,7 +82,7 @@ function Playerselect() {
         )
     }
 
-    if (isLoading) return <div className='animate-bounce'>...loading</div>;
+    if (isLoading) return <div className='animate-bounce m-20'>...loading</div>;
     if (error) return <div>{error.message}</div>;
 
     return(
@@ -99,7 +99,7 @@ function Playerselect() {
                             <th className="font-extrabold">Assists</th>
                             <th className="font-extrabold">Minutes</th>
                             <th className="font-extrabold">Club</th>
-                            <th className="font-extrabold">Rating</th>
+                            <th className="font-extrabold">Cost</th>
                         </tr>    
                     </thead>
                         <tbody className="">

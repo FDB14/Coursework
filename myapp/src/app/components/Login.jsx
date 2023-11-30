@@ -1,10 +1,27 @@
 'use client';
 
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Link from 'next/link';
+import { useEffect } from 'react';
 
 const Login = () => {
     const { user, isLoading } = useUser()
+
+    console.log(user)
+
+    useEffect(() => {
+        const res = fetch('http://localhost:8383/saveuser',
+        {
+            method : 'POST',
+            headers : {
+                "Content-Type" : 'application/json'
+            },
+            body: JSON.stringify({
+                package : true,
+            }
+            )
+        }
+        )
+    }, [])
 
     return(
         <div>
@@ -13,14 +30,15 @@ const Login = () => {
             )
             }
             {!isLoading && !user &&(
-                <Link
+                <a
                 href="/api/auth/login"
                 className='font-bold p-5 text-3xl font-sans animate-pulse'
                 >
                 login
-                </Link>
+                </a>
             )}
-            {user && (
+            {user &&(
+                
                 <div className='flex flex-col items-center'>
                     <img
                     src={user.picture}
@@ -32,8 +50,7 @@ const Login = () => {
                         <p className='text-white py-2'>{user.name}</p>
                     )
                     }
-                    
-                    <Link href="/api/auth/logout" className='font-bold'>logout</Link>
+                    <a href="/api/auth/logout" className='font-bold'>logout</a>
                 </div>
                 
             )}

@@ -38,16 +38,17 @@ function Playerselect() {
     }
 
     const handleClick =  async(defender) => {
-        let full_json = {playerId : defender.id, userId : user.sub}
-        let status = await makeRequest(full_json)
+        const full_json = {playerId : defender.id, userId : user.sub}
+        const status = await makeRequest(full_json)
         console.log(status)
-        let foo = await status.status
+        const foo = await status.status
         if(foo == 'recieved'){
-            Update_User_Credit({rating : defender.rating})
+            Update_User_Credit({rating : defender.rating, userId : user.sub})
         }else{
             return
         }
     }
+
     async function makeRequest(parcel){
         if(parcel == ''){ return }
         const res = await fetch('http://localhost:8383/',
@@ -81,7 +82,7 @@ function Playerselect() {
         )
     }
 
-    if (isLoading) return <div className='animate-bounce'>...loading</div>;
+    if (isLoading) return <div className='animate-bounce m-20'>...loading</div>;
     if (error) return <div>{error.message}</div>;
 
     return(
@@ -98,7 +99,7 @@ function Playerselect() {
                             <th className="font-extrabold">Assists</th>
                             <th className="font-extrabold">Minutes</th>
                             <th className="font-extrabold">Club</th>
-                            <th className="font-extrabold">Rating</th>
+                            <th className="font-extrabold">Cost</th>
                         </tr>    
                     </thead>
                         <tbody className="">

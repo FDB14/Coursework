@@ -3,9 +3,9 @@ html {
   scroll-behavior: smooth;
 }
 
-
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@600&family=Poppins&display=swap');
 
 :root {
   --foreground-rgb: 0, 0, 0;

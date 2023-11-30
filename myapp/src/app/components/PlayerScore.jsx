@@ -1,27 +1,40 @@
 "use client"
 
+import { ResponseCookies } from 'next/dist/compiled/@edge-runtime/cookies'
 import { useEffect, useState } from 'react'
 
 
-function PlayerScore() {
+function PlayerScore({user, name}) {
 
     const [score, setScore] = useState()
 
     useEffect(() => {
-        fetch('http://localhost:8383/teamscore').then(
-            response => {
+        async function Find_Score(){
+            const user_id = user
+            const parcel = {userId : user_id}
+            fetch('http://localhost:8383/teamscore',
+            {
+                method : 'POST',
+                headers : {
+                    "Content-Type" : 'application/json'
+                },
+                body: JSON.stringify({
+                    package : parcel,
+                }
+                )
+            }
+            ).then(response => {
                 return response.json()
-            }
-        ).then(
-            data => {
+            }).then(data => {
                 return data.data
-            }
-        ).then(
-            data => {
+            }).then(data => {
                 setScore(data)
             }
-        )
-    })
+            )
+        }
+
+        Find_Score()
+    },[])
 
     return(
         <div className='flex flex-col'>

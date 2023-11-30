@@ -12,6 +12,7 @@ const config: Config = {
     fontFamily: {
       display: ['Source Serif Pro', 'Georgia', 'serif'],
       body: ['Synonym', 'system-ui', 'sans-serif'],
+      'Inter' : ['Noto Sans', 'sans-serif'],
     },
     colors: {
       primary: '#7eaf34',
