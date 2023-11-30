@@ -56,8 +56,10 @@ function Ranking() {
                 </thead>
                 <tbody className=''>
                 {
-                    quickSort(scores).map((scores) => (
-                        <RankingComp scores={scores}></RankingComp>
+                    quickSort(scores).map((scores, index) => (
+                        <div key={index}>
+                            <RankingComp scores={scores}></RankingComp>
+                        </div>
                     ))
                 }
                 </tbody>
