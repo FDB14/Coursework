@@ -13,9 +13,14 @@ const config: Config = {
       display: ['Source Serif Pro', 'Georgia', 'serif'],
       body: ['Synonym', 'system-ui', 'sans-serif'],
       'Inter' : ['Noto Sans', 'sans-serif'],
+      'Garamond' : ['Cormorant Garamond', 'serif'],
     },
     colors: {
       primary: '#7eaf34',
+      col1 : '#17255a',
+      col2: '#d88373',
+      col3 : '#bd1e1e',
+      col4 : '#f5e2c8',
       ...colors
     },
     extend: {
@@ -26,6 +31,12 @@ const config: Config = {
       },
       animation: {
         marquee: 'marquee 30s linear infinite',
+      },
+      transitionProperty: {
+        'width': 'width'
+      },
+      transitionDuration: {
+        '2000': '2000ms',
       },
       keyframes: {
         marquee: {

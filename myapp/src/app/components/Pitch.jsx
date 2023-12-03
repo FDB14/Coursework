@@ -12,57 +12,60 @@ function Pitch({id}) {
     const [midfielders, setMidfielders] = useState('')
     const [goalkeepers, setGoalkeepers] = useState('')
     const [credit, setCredit] = useState()
-    
+
     useEffect(() => {
         Fetch_User_Team()
     }, [])
 
     async function Fetch_User_Team(){
-        const user_id = `${id}`
-        const parcel = {userId : user_id}
-        fetch('http://localhost:8383/team',
-        {
-            method : 'POST',
-            headers : {
-                "Content-Type" : 'application/json'
-            },
-            body: JSON.stringify({
-                package : parcel,
+        if(user){
+            const user_id = `${id}`
+            const parcel = {userId : user_id}
+            fetch('http://localhost:8383/team',
+            {
+                method : 'POST',
+                headers : {
+                    "Content-Type" : 'application/json'
+                },
+                body: JSON.stringify({
+                    package : parcel,
+                }
+                )
+            }
+            ).then(response => {
+                return response.json()
+            }).then(data => {
+                setCredit(data.credit[0].user_credit)
+                data = data.data
+                return data
+            }).then(data => {
+                let defenderArray = []
+                let midfielderArray = []
+                let forwardArray = []
+                for(let i = 0; i < data.length; i++){
+                    if(data[i].position == "Goalkeeper"){
+                        setGoalkeepers(data[i])
+                    }else if(data[i].position == "Defender"){
+                        defenderArray.push(data[i])
+                        setDefenders(defenderArray)
+        
+                    }else if(data[i].position == "Midfielder"){
+                        midfielderArray.push(data[i])
+                        setMidfielders(midfielderArray)
+        
+                    }else if(data[i].position == "Attacker"){
+                        forwardArray.push(data[i])
+                        setForwards(forwardArray)
+        
+                    }
+                }
             }
             )
         }
-        ).then(response => {
-            return response.json()
-        }).then(data => {
-            setCredit(data.credit[0].user_credit)
-            data = data.data
-            return data
-        }).then(data => {
-            let defenderArray = []
-            let midfielderArray = []
-            let forwardArray = []
-            for(let i = 0; i < data.length; i++){
-                if(data[i].position == "Goalkeeper"){
-                    setGoalkeepers(data[i])
-                }else if(data[i].position == "Defender"){
-                    defenderArray.push(data[i])
-                    setDefenders(defenderArray)
-    
-                }else if(data[i].position == "Midfielder"){
-                    midfielderArray.push(data[i])
-                    setMidfielders(midfielderArray)
-    
-                }else if(data[i].position == "Attacker"){
-                    forwardArray.push(data[i])
-                    setForwards(forwardArray)
-    
-                }
-            }
-        }
-        )
     }
 
     function Remove_Player(player_id, player_rating){
+        if(user){
         const parcel = {player_id : player_id, userId : id, player_cost : player_rating}
         const res = fetch('http://localhost:8383/delete',
         {
@@ -76,6 +79,7 @@ function Pitch({id}) {
             )
         }
         )
+    }
     }
 
     return(

@@ -30,12 +30,14 @@ const Login = () => {
             )
             }
             {!isLoading && !user &&(
+                <div className='flex flex-col items-center'>
                 <a
                 href="/api/auth/login"
                 className='font-bold p-5 text-3xl font-sans animate-pulse'
                 >
                 login
                 </a>
+                </div>
             )}
             {user &&(
                 

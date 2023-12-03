@@ -102,14 +102,11 @@ function Playerselect() {
                             <th className="font-extrabold">Cost</th>
                         </tr>    
                     </thead>
-                        <tbody className="">
-                            {quickSort(defender).map((defender, index) => (
-                                <div key={index}>
+                    {quickSort(defender).map((defender, index) => (
+                        <tbody className="" key={index}>
                                     <DefenderRow defender={defender} handleClick={handleClick}></DefenderRow>
-                                </div>
-                            ))
-                            }
                         </tbody>
+                        ))}
                 </table>       
                 
             </div>
