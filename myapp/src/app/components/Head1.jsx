@@ -20,7 +20,7 @@ function Head1() {
   return (
     <>
     <div className={`flex duration-[1300ms] ${transClass ? "w-[5vw]" : "w-[100vw]"}`}>
-    <div className={`duration-[1000ms] h-screen ${transClass ? "w-[10vw]" : "w-[25vw]"} bg-col1 text-center flex justify-center items-center font-body z-50 hover:text-opacity-50`}>
+    <div className={`duration-[1300ms] h-screen ${transClass ? "w-[10vw]" : "w-[25vw]"} bg-col1 text-center flex justify-center items-center font-body z-50 hover:text-opacity-50`}>
         <div className='-rotate-90 text-6xl text-black font-extrabold '>
             <button onClick={toggle}>
                 {transClass ? "Menu" : "FantasyFootball"}
