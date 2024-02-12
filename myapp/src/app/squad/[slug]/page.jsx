@@ -1,16 +1,19 @@
 'use client'
-import { useUser } from '@auth0/nextjs-auth0/client';
-import DefenderRow from "./DefenderRow"
-import { useState, useEffect } from "react"
 
-function Playerselect() {
+import { useUser } from '@auth0/nextjs-auth0/client';
+import React, { useEffect, useState } from 'react'
+import DefenderRow from './DefenderRow';
+
+
+function Playerselect({params}) {
   
     const { user, error, isLoading } = useUser();
 
-    const [defender, setDefender] = useState([{"id": 0,"playername":"","playerlast":"","nationality":"","age": null,"height":"","minutes":null,"goals":null,"assists":null,"rating":null,"team":""}])
+    const [defender, setDefender] = useState([{"id":"","playername":"","playerlast":"","nationality":"","age": null,"height":"","minutes":null,"goals":null,"assists":null,"rating":null,"team":""}])
+    const [input, setInput] = useState('')
 
     useEffect(() => {
-        fetch("http://localhost:8383/getforward").then(
+        fetch(`http://localhost:8383/${params.slug}`).then(
             response => response.json()
         ).then(
             data => {
@@ -86,8 +89,8 @@ function Playerselect() {
     if (error) return <div>{error.message}</div>;
 
     return(
-        <div className = "">
-            <div className="align-middle bg-blueGray-300 text-black font-medium rounded-md m-10 outline outline-2 outline-offset-2 outline-slate-300">    
+        <div className = "flex justify-center align-middle">
+            <div className="align-middle bg-blueGray-300 text-black font-medium rounded-md m-10 outline outline-2 outline-offset-2 outline-slate-300 w-fit">    
                 <table>
                     <thead>
                         <tr className="">

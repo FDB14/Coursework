@@ -1,3 +1,4 @@
+const key = process.env.PG_PASS;
 const express = require('express')
 const app = express()
 const port = 8383
@@ -7,10 +8,10 @@ const {Client} = require('pg')
 
 const client = new Client({
     host : "localhost",
-    user : "admin",
+    user : "postgres",
     port : 5432,
-    password : "root",
-    database : "mainconnection"
+    password : `${key}`,
+    database : "fantasyfootball"
 })
 
 app.use(express.json())
@@ -34,8 +35,12 @@ app.post('/delete', async(req, res) => {
     }
     res.status(200).send({status: 'recieved'})
     let userId = await Get_User_Id(package)
-    await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${package.player_id} AND user_id = '${userId}';`)
-    await client.query(`UPDATE useraccount SET user_credit = user_credit + ${Math.round(package.player_cost * 10)} -2 WHERE auth0_id = '${userId}';`)
+    await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${package.player_id} AND user_id = '${userId}';`)
+    if(package.player_cost * 10 > 20){
+        await client.query(`UPDATE ffootti.useraccount SET user_credit = user_credit + ${Math.round(package.player_cost * 10)} -2 WHERE auth0_id = '${userId}';`)
+    }else{
+        client.query(`UPDATE ffootti.useraccount SET user_credit = user_credit + 18 WHERE auth0_id = '${userId}' `)
+    }
 })
  
 app.post('/', async(req, res) => {
@@ -51,22 +56,22 @@ app.post('/', async(req, res) => {
     }
 })
 
-app.get('/getdefender', async(req, res) => {
+app.get('/defender', async(req, res) => {
     let obj = await Get_Players_From_Db('Defender')
     res.status(200).json({data : obj})
 })
 
-app.get('/getmidfield', async(req, res) => {
+app.get('/midfield', async(req, res) => {
     let obj = await Get_Players_From_Db('Midfielder')
     res.status(200).json({data : obj})
 })
 
-app.get('/getgoalkeeper', async(req, res) => {
+app.get('/goalkeeper', async(req, res) => {
     let obj = await Get_Players_From_Db('Goalkeeper')
     res.status(200).json({data : obj})
 })
 
-app.get('/getforward', async(req, res) => {
+app.get('/forward', async(req, res) => {
     let obj = await Get_Players_From_Db('Attacker')
     res.status(200).json({data : obj})
 })
@@ -115,9 +120,9 @@ client.connect()
 
 function Update_User_Credit(cost, id){
     if(cost > 20){
-        let response = client.query(`UPDATE useraccount SET user_credit = user_credit - ${cost} WHERE auth0_id = '${id}';`)
+        let response = client.query(`UPDATE ffootti.useraccount SET user_credit = user_credit - ${cost} WHERE auth0_id = '${id}';`)
     }else{
-        client.query(`UPDATE useraccount SET user_credit = user_credit - 20 WHERE auth0_id = '${id}';`)
+        client.query(`UPDATE ffootti.useraccount SET user_credit = user_credit - 20 WHERE auth0_id = '${id}';`)
     }
 }
 
@@ -137,26 +142,26 @@ function Get_User_Id(package){
 
 async function Send_Team_Info(package){
     try{
-        let response = await client.query(`INSERT INTO userteam(player_id, user_id) VALUES(${Number(package.playerId)}, '${(Get_User_Id(package))}');`)
+        let response = await client.query(`INSERT INTO ffootti.userteam(player_id, user_id) VALUES(${Number(package.playerId)}, '${(Get_User_Id(package))}');`)
 
-        let res = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 4 AND position = 'Defender');`)
+        let res = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 4 AND position = 'Defender');`)
         if(res.rowCount > 4){
-            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res.rows[0].player_id} AND position = 'Defender' AND user_id = '${Get_User_Id(package)}';`)
+            await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${res.rows[0].player_id} AND position = 'Defender' AND user_id = '${Get_User_Id(package)}';`)
         }
 
-        let res1 = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 1 AND position = 'Goalkeeper');`)
+        let res1 = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 1 AND position = 'Goalkeeper');`)
         if(res1.rowCount > 1){
-            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res1.rows[0].player_id} AND position = 'Goalkeeper' AND user_id = '${Get_User_Id(package)}';`)
+            await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${res1.rows[0].player_id} AND position = 'Goalkeeper' AND user_id = '${Get_User_Id(package)}';`)
         }
 
-        let res2 = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Midfielder');`)
+        let res2 = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Midfielder');`)
         if(res2.rowCount > 3){
             await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res2.rows[0].player_id} AND position = 'Midfielder' AND user_id = '${Get_User_Id(package)}';`)
         }
         
-        let res3 = await client.query(`SELECT DISTINCT * FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Attacker');`)
+        let res3 = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Attacker');`)
         if(res3.rowCount > 3){
-            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res3.rows[0].player_id} AND position = 'Attacker' AND user_id = '${Get_User_Id(package)}';`)
+            await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${res3.rows[0].player_id} AND position = 'Attacker' AND user_id = '${Get_User_Id(package)}';`)
         }
 
         return response
@@ -168,7 +173,7 @@ async function Send_Team_Info(package){
 
 async function Send_Players_Team(id){
     try{
-        var response = await client.query(`SELECT id, playername, nationality, teamicon, rating, position FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id = '${id}';`)
+        var response = await client.query(`SELECT id, playername, nationality, teamicon, rating, position, photo FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id = '${id}';`)
     }catch(error){
         console.error(`Error: ${error}`)
     }
@@ -178,7 +183,7 @@ async function Send_Players_Team(id){
 
 async function Get_Players_From_Db(position){
     try{
-        var response = await client.query(`SELECT id, playername, playerlast, nationality, age, height, minutes, goals, assists, rating, team FROM playersmain WHERE position = '${position}';`)
+        var response = await client.query(`SELECT id, playername, playerlast, nationality, age, height, minutes, goals, assists, rating, team FROM ffootti.playersmain WHERE position = '${position}';`)
     }catch(error){
         console.error(`Error: ${error}`)
     }
@@ -187,7 +192,7 @@ async function Get_Players_From_Db(position){
 
 async function calc_score(id){
     let score = 0
-    let response = await client.query(`SELECT appearances, goals, assists, passes, conceded, yellow, yellowred, red, minutes, duelswon, penwon, penscored, penmissed, pencommited FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id = '${id}'`)
+    let response = await client.query(`SELECT appearances, goals, assists, passes, conceded, yellow, yellowred, red, minutes, duelswon, penwon, penscored, penmissed, pencommited FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id = '${id}'`)
     response.rows.map((player) => {
         if(player.appearances > 0){
             score += player.minutes / 30
@@ -210,19 +215,19 @@ async function calc_score(id){
 }
 
 async function Get_User_Score(id){
-    let response = await client.query(`SELECT userscore FROM useraccount WHERE auth0_id = '${id}';`)
+    let response = await client.query(`SELECT userscore FROM ffootti.useraccount WHERE auth0_id = '${id}';`)
     return response.rows[0].userscore
 }
 
 async function Get_All_User_Score(){
-    let response = await client.query(`SELECT userscore, userid, auth0_id, user_name FROM useraccount;`)
+    let response = await client.query(`SELECT userscore, userid, auth0_id, user_name FROM ffootti.useraccount;`)
     console.log(response)
     return response.rows
 }
 
 async function Get_User_Credit(user_id){
     try{
-        var res = await client.query(`SELECT user_credit FROM useraccount WHERE auth0_id = '${user_id}'`)
+        var res = await client.query(`SELECT user_credit FROM ffootti.useraccount WHERE auth0_id = '${user_id}'`)
     }catch(error){
         console.error(error)
     }
@@ -232,7 +237,7 @@ async function Get_User_Credit(user_id){
 async function Save_User_Score(id){
     let score = 0 
     try{
-        var res = await client.query(`SELECT appearances, goals, assists, passes, conceded, yellow, yellowred, red, minutes, duelswon, penwon, penscored, penmissed, pencommited FROM userteam INNER JOIN playersmain ON player_id = id WHERE user_id = '${id}'`)
+        var res = await client.query(`SELECT appearances, goals, assists, passes, conceded, yellow, yellowred, red, minutes, duelswon, penwon, penscored, penmissed, pencommited FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id = '${id}'`)
         res.rows.map((player) => {
             if(player.appearances > 0){
                 score += player.minutes / 30
@@ -250,7 +255,7 @@ async function Save_User_Score(id){
                 score -= player.pencommited
             }
         })
-        var send = client.query(`UPDATE useraccount SET userscore = ${score} WHERE auth0_id = '${id}'`)
+        var send = client.query(`UPDATE ffootti.useraccount SET userscore = ${score} WHERE auth0_id = '${id}'`)
     }catch(error){
         console.error(error)
     }
@@ -259,7 +264,7 @@ async function Save_User_Score(id){
 async function Save_User(){
     var myHeaders = new Headers();
     myHeaders.append("Accept", "application/json");
-    myHeaders.append("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijc1UkROc2tjb29lNkkxYUpCam9kOSJ9.eyJpc3MiOiJodHRwczovL2Rldi1hYTJ5NW03ZGsxanBuN3pvLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJkTE5jS3NLQnZ5ZG9hOTU2QTJEVXJLUHFFTThERE9zV0BjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9kZXYtYWEyeTVtN2RrMWpwbjd6by51cy5hdXRoMC5jb20vYXBpL3YyLyIsImlhdCI6MTcwMDU3NjE2NiwiZXhwIjoxNzAzMTY4MTY2LCJhenAiOiJkTE5jS3NLQnZ5ZG9hOTU2QTJEVXJLUHFFTThERE9zVyIsInNjb3BlIjoicmVhZDpjbGllbnRfZ3JhbnRzIGNyZWF0ZTpjbGllbnRfZ3JhbnRzIGRlbGV0ZTpjbGllbnRfZ3JhbnRzIHVwZGF0ZTpjbGllbnRfZ3JhbnRzIHJlYWQ6dXNlcnMgdXBkYXRlOnVzZXJzIGRlbGV0ZTp1c2VycyBjcmVhdGU6dXNlcnMgcmVhZDp1c2Vyc19hcHBfbWV0YWRhdGEgdXBkYXRlOnVzZXJzX2FwcF9tZXRhZGF0YSBkZWxldGU6dXNlcnNfYXBwX21ldGFkYXRhIGNyZWF0ZTp1c2Vyc19hcHBfbWV0YWRhdGEgcmVhZDp1c2VyX2N1c3RvbV9ibG9ja3MgY3JlYXRlOnVzZXJfY3VzdG9tX2Jsb2NrcyBkZWxldGU6dXNlcl9jdXN0b21fYmxvY2tzIGNyZWF0ZTp1c2VyX3RpY2tldHMgcmVhZDpjbGllbnRzIHVwZGF0ZTpjbGllbnRzIGRlbGV0ZTpjbGllbnRzIGNyZWF0ZTpjbGllbnRzIHJlYWQ6Y2xpZW50X2tleXMgdXBkYXRlOmNsaWVudF9rZXlzIGRlbGV0ZTpjbGllbnRfa2V5cyBjcmVhdGU6Y2xpZW50X2tleXMgcmVhZDpjb25uZWN0aW9ucyB1cGRhdGU6Y29ubmVjdGlvbnMgZGVsZXRlOmNvbm5lY3Rpb25zIGNyZWF0ZTpjb25uZWN0aW9ucyByZWFkOnJlc291cmNlX3NlcnZlcnMgdXBkYXRlOnJlc291cmNlX3NlcnZlcnMgZGVsZXRlOnJlc291cmNlX3NlcnZlcnMgY3JlYXRlOnJlc291cmNlX3NlcnZlcnMgcmVhZDpkZXZpY2VfY3JlZGVudGlhbHMgdXBkYXRlOmRldmljZV9jcmVkZW50aWFscyBkZWxldGU6ZGV2aWNlX2NyZWRlbnRpYWxzIGNyZWF0ZTpkZXZpY2VfY3JlZGVudGlhbHMgcmVhZDpydWxlcyB1cGRhdGU6cnVsZXMgZGVsZXRlOnJ1bGVzIGNyZWF0ZTpydWxlcyByZWFkOnJ1bGVzX2NvbmZpZ3MgdXBkYXRlOnJ1bGVzX2NvbmZpZ3MgZGVsZXRlOnJ1bGVzX2NvbmZpZ3MgcmVhZDpob29rcyB1cGRhdGU6aG9va3MgZGVsZXRlOmhvb2tzIGNyZWF0ZTpob29rcyByZWFkOmFjdGlvbnMgdXBkYXRlOmFjdGlvbnMgZGVsZXRlOmFjdGlvbnMgY3JlYXRlOmFjdGlvbnMgcmVhZDplbWFpbF9wcm92aWRlciB1cGRhdGU6ZW1haWxfcHJvdmlkZXIgZGVsZXRlOmVtYWlsX3Byb3ZpZGVyIGNyZWF0ZTplbWFpbF9wcm92aWRlciBibGFja2xpc3Q6dG9rZW5zIHJlYWQ6c3RhdHMgcmVhZDppbnNpZ2h0cyByZWFkOnRlbmFudF9zZXR0aW5ncyB1cGRhdGU6dGVuYW50X3NldHRpbmdzIHJlYWQ6bG9ncyByZWFkOmxvZ3NfdXNlcnMgcmVhZDpzaGllbGRzIGNyZWF0ZTpzaGllbGRzIHVwZGF0ZTpzaGllbGRzIGRlbGV0ZTpzaGllbGRzIHJlYWQ6YW5vbWFseV9ibG9ja3MgZGVsZXRlOmFub21hbHlfYmxvY2tzIHVwZGF0ZTp0cmlnZ2VycyByZWFkOnRyaWdnZXJzIHJlYWQ6Z3JhbnRzIGRlbGV0ZTpncmFudHMgcmVhZDpndWFyZGlhbl9mYWN0b3JzIHVwZGF0ZTpndWFyZGlhbl9mYWN0b3JzIHJlYWQ6Z3VhcmRpYW5fZW5yb2xsbWVudHMgZGVsZXRlOmd1YXJkaWFuX2Vucm9sbG1lbnRzIGNyZWF0ZTpndWFyZGlhbl9lbnJvbGxtZW50X3RpY2tldHMgcmVhZDp1c2VyX2lkcF90b2tlbnMgY3JlYXRlOnBhc3N3b3Jkc19jaGVja2luZ19qb2IgZGVsZXRlOnBhc3N3b3Jkc19jaGVja2luZ19qb2IgcmVhZDpjdXN0b21fZG9tYWlucyBkZWxldGU6Y3VzdG9tX2RvbWFpbnMgY3JlYXRlOmN1c3RvbV9kb21haW5zIHVwZGF0ZTpjdXN0b21fZG9tYWlucyByZWFkOmVtYWlsX3RlbXBsYXRlcyBjcmVhdGU6ZW1haWxfdGVtcGxhdGVzIHVwZGF0ZTplbWFpbF90ZW1wbGF0ZXMgcmVhZDptZmFfcG9saWNpZXMgdXBkYXRlOm1mYV9wb2xpY2llcyByZWFkOnJvbGVzIGNyZWF0ZTpyb2xlcyBkZWxldGU6cm9sZXMgdXBkYXRlOnJvbGVzIHJlYWQ6cHJvbXB0cyB1cGRhdGU6cHJvbXB0cyByZWFkOmJyYW5kaW5nIHVwZGF0ZTpicmFuZGluZyBkZWxldGU6YnJhbmRpbmcgcmVhZDpsb2dfc3RyZWFtcyBjcmVhdGU6bG9nX3N0cmVhbXMgZGVsZXRlOmxvZ19zdHJlYW1zIHVwZGF0ZTpsb2dfc3RyZWFtcyBjcmVhdGU6c2lnbmluZ19rZXlzIHJlYWQ6c2lnbmluZ19rZXlzIHVwZGF0ZTpzaWduaW5nX2tleXMgcmVhZDpsaW1pdHMgdXBkYXRlOmxpbWl0cyBjcmVhdGU6cm9sZV9tZW1iZXJzIHJlYWQ6cm9sZV9tZW1iZXJzIGRlbGV0ZTpyb2xlX21lbWJlcnMgcmVhZDplbnRpdGxlbWVudHMgcmVhZDphdHRhY2tfcHJvdGVjdGlvbiB1cGRhdGU6YXR0YWNrX3Byb3RlY3Rpb24gcmVhZDpvcmdhbml6YXRpb25zX3N1bW1hcnkgY3JlYXRlOmF1dGhlbnRpY2F0aW9uX21ldGhvZHMgcmVhZDphdXRoZW50aWNhdGlvbl9tZXRob2RzIHVwZGF0ZTphdXRoZW50aWNhdGlvbl9tZXRob2RzIGRlbGV0ZTphdXRoZW50aWNhdGlvbl9tZXRob2RzIHJlYWQ6b3JnYW5pemF0aW9ucyB1cGRhdGU6b3JnYW5pemF0aW9ucyBjcmVhdGU6b3JnYW5pemF0aW9ucyBkZWxldGU6b3JnYW5pemF0aW9ucyBjcmVhdGU6b3JnYW5pemF0aW9uX21lbWJlcnMgcmVhZDpvcmdhbml6YXRpb25fbWVtYmVycyBkZWxldGU6b3JnYW5pemF0aW9uX21lbWJlcnMgY3JlYXRlOm9yZ2FuaXphdGlvbl9jb25uZWN0aW9ucyByZWFkOm9yZ2FuaXphdGlvbl9jb25uZWN0aW9ucyB1cGRhdGU6b3JnYW5pemF0aW9uX2Nvbm5lY3Rpb25zIGRlbGV0ZTpvcmdhbml6YXRpb25fY29ubmVjdGlvbnMgY3JlYXRlOm9yZ2FuaXphdGlvbl9tZW1iZXJfcm9sZXMgcmVhZDpvcmdhbml6YXRpb25fbWVtYmVyX3JvbGVzIGRlbGV0ZTpvcmdhbml6YXRpb25fbWVtYmVyX3JvbGVzIGNyZWF0ZTpvcmdhbml6YXRpb25faW52aXRhdGlvbnMgcmVhZDpvcmdhbml6YXRpb25faW52aXRhdGlvbnMgZGVsZXRlOm9yZ2FuaXphdGlvbl9pbnZpdGF0aW9ucyByZWFkOmNsaWVudF9jcmVkZW50aWFscyBjcmVhdGU6Y2xpZW50X2NyZWRlbnRpYWxzIHVwZGF0ZTpjbGllbnRfY3JlZGVudGlhbHMgZGVsZXRlOmNsaWVudF9jcmVkZW50aWFscyIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyJ9.ZYvHhwYHU5Dl2-suBGA0SxVUJFlucxyshNrEk7dASlNAusMNAqy3ekQGXCS7kxsAVaupmhBbTfgHnxk7NCRq38BIOL1W9wmD6MQw4A34aJtx0n4WFnf8N_G1buOF8t1K4HznRJ5vdaG7iDR-CDMPvuDLz7nWRKgWCpt4T_33XL_RX_CNF_c07HrkDkiZC0QpXkqDsjnn9c1tam3BIZPXDtYEsRxfXr6iodmMwreEQ9d-JnzwgRI11m6d9O5ZMG9ZpHo5bM7XPb4oZkPJ_y72zXdYEY4GdM0x-7dKl9riDHeLvntI63IEI2lN0kDmiqAQPcOIkZY9IHLsXFSmKv__PA");
+    myHeaders.append("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ijc1UkROc2tjb29lNkkxYUpCam9kOSJ9.eyJpc3MiOiJodHRwczovL2Rldi1hYTJ5NW03ZGsxanBuN3pvLnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJkTE5jS3NLQnZ5ZG9hOTU2QTJEVXJLUHFFTThERE9zV0BjbGllbnRzIiwiYXVkIjoiaHR0cHM6Ly9kZXYtYWEyeTVtN2RrMWpwbjd6by51cy5hdXRoMC5jb20vYXBpL3YyLyIsImlhdCI6MTcwNzY5MjcwMCwiZXhwIjoxNzEwMjg0NzAwLCJhenAiOiJkTE5jS3NLQnZ5ZG9hOTU2QTJEVXJLUHFFTThERE9zVyIsInNjb3BlIjoicmVhZDpjbGllbnRfZ3JhbnRzIGNyZWF0ZTpjbGllbnRfZ3JhbnRzIGRlbGV0ZTpjbGllbnRfZ3JhbnRzIHVwZGF0ZTpjbGllbnRfZ3JhbnRzIHJlYWQ6dXNlcnMgdXBkYXRlOnVzZXJzIGRlbGV0ZTp1c2VycyBjcmVhdGU6dXNlcnMgcmVhZDp1c2Vyc19hcHBfbWV0YWRhdGEgdXBkYXRlOnVzZXJzX2FwcF9tZXRhZGF0YSBkZWxldGU6dXNlcnNfYXBwX21ldGFkYXRhIGNyZWF0ZTp1c2Vyc19hcHBfbWV0YWRhdGEgcmVhZDp1c2VyX2N1c3RvbV9ibG9ja3MgY3JlYXRlOnVzZXJfY3VzdG9tX2Jsb2NrcyBkZWxldGU6dXNlcl9jdXN0b21fYmxvY2tzIGNyZWF0ZTp1c2VyX3RpY2tldHMgcmVhZDpjbGllbnRzIHVwZGF0ZTpjbGllbnRzIGRlbGV0ZTpjbGllbnRzIGNyZWF0ZTpjbGllbnRzIHJlYWQ6Y2xpZW50X2tleXMgdXBkYXRlOmNsaWVudF9rZXlzIGRlbGV0ZTpjbGllbnRfa2V5cyBjcmVhdGU6Y2xpZW50X2tleXMgcmVhZDpjb25uZWN0aW9ucyB1cGRhdGU6Y29ubmVjdGlvbnMgZGVsZXRlOmNvbm5lY3Rpb25zIGNyZWF0ZTpjb25uZWN0aW9ucyByZWFkOnJlc291cmNlX3NlcnZlcnMgdXBkYXRlOnJlc291cmNlX3NlcnZlcnMgZGVsZXRlOnJlc291cmNlX3NlcnZlcnMgY3JlYXRlOnJlc291cmNlX3NlcnZlcnMgcmVhZDpkZXZpY2VfY3JlZGVudGlhbHMgdXBkYXRlOmRldmljZV9jcmVkZW50aWFscyBkZWxldGU6ZGV2aWNlX2NyZWRlbnRpYWxzIGNyZWF0ZTpkZXZpY2VfY3JlZGVudGlhbHMgcmVhZDpydWxlcyB1cGRhdGU6cnVsZXMgZGVsZXRlOnJ1bGVzIGNyZWF0ZTpydWxlcyByZWFkOnJ1bGVzX2NvbmZpZ3MgdXBkYXRlOnJ1bGVzX2NvbmZpZ3MgZGVsZXRlOnJ1bGVzX2NvbmZpZ3MgcmVhZDpob29rcyB1cGRhdGU6aG9va3MgZGVsZXRlOmhvb2tzIGNyZWF0ZTpob29rcyByZWFkOmFjdGlvbnMgdXBkYXRlOmFjdGlvbnMgZGVsZXRlOmFjdGlvbnMgY3JlYXRlOmFjdGlvbnMgcmVhZDplbWFpbF9wcm92aWRlciB1cGRhdGU6ZW1haWxfcHJvdmlkZXIgZGVsZXRlOmVtYWlsX3Byb3ZpZGVyIGNyZWF0ZTplbWFpbF9wcm92aWRlciBibGFja2xpc3Q6dG9rZW5zIHJlYWQ6c3RhdHMgcmVhZDppbnNpZ2h0cyByZWFkOnRlbmFudF9zZXR0aW5ncyB1cGRhdGU6dGVuYW50X3NldHRpbmdzIHJlYWQ6bG9ncyByZWFkOmxvZ3NfdXNlcnMgcmVhZDpzaGllbGRzIGNyZWF0ZTpzaGllbGRzIHVwZGF0ZTpzaGllbGRzIGRlbGV0ZTpzaGllbGRzIHJlYWQ6YW5vbWFseV9ibG9ja3MgZGVsZXRlOmFub21hbHlfYmxvY2tzIHVwZGF0ZTp0cmlnZ2VycyByZWFkOnRyaWdnZXJzIHJlYWQ6Z3JhbnRzIGRlbGV0ZTpncmFudHMgcmVhZDpndWFyZGlhbl9mYWN0b3JzIHVwZGF0ZTpndWFyZGlhbl9mYWN0b3JzIHJlYWQ6Z3VhcmRpYW5fZW5yb2xsbWVudHMgZGVsZXRlOmd1YXJkaWFuX2Vucm9sbG1lbnRzIGNyZWF0ZTpndWFyZGlhbl9lbnJvbGxtZW50X3RpY2tldHMgcmVhZDp1c2VyX2lkcF90b2tlbnMgY3JlYXRlOnBhc3N3b3Jkc19jaGVja2luZ19qb2IgZGVsZXRlOnBhc3N3b3Jkc19jaGVja2luZ19qb2IgcmVhZDpjdXN0b21fZG9tYWlucyBkZWxldGU6Y3VzdG9tX2RvbWFpbnMgY3JlYXRlOmN1c3RvbV9kb21haW5zIHVwZGF0ZTpjdXN0b21fZG9tYWlucyByZWFkOmVtYWlsX3RlbXBsYXRlcyBjcmVhdGU6ZW1haWxfdGVtcGxhdGVzIHVwZGF0ZTplbWFpbF90ZW1wbGF0ZXMgcmVhZDptZmFfcG9saWNpZXMgdXBkYXRlOm1mYV9wb2xpY2llcyByZWFkOnJvbGVzIGNyZWF0ZTpyb2xlcyBkZWxldGU6cm9sZXMgdXBkYXRlOnJvbGVzIHJlYWQ6cHJvbXB0cyB1cGRhdGU6cHJvbXB0cyByZWFkOmJyYW5kaW5nIHVwZGF0ZTpicmFuZGluZyBkZWxldGU6YnJhbmRpbmcgcmVhZDpsb2dfc3RyZWFtcyBjcmVhdGU6bG9nX3N0cmVhbXMgZGVsZXRlOmxvZ19zdHJlYW1zIHVwZGF0ZTpsb2dfc3RyZWFtcyBjcmVhdGU6c2lnbmluZ19rZXlzIHJlYWQ6c2lnbmluZ19rZXlzIHVwZGF0ZTpzaWduaW5nX2tleXMgcmVhZDpsaW1pdHMgdXBkYXRlOmxpbWl0cyBjcmVhdGU6cm9sZV9tZW1iZXJzIHJlYWQ6cm9sZV9tZW1iZXJzIGRlbGV0ZTpyb2xlX21lbWJlcnMgcmVhZDplbnRpdGxlbWVudHMgcmVhZDphdHRhY2tfcHJvdGVjdGlvbiB1cGRhdGU6YXR0YWNrX3Byb3RlY3Rpb24gcmVhZDpvcmdhbml6YXRpb25zX3N1bW1hcnkgY3JlYXRlOmF1dGhlbnRpY2F0aW9uX21ldGhvZHMgcmVhZDphdXRoZW50aWNhdGlvbl9tZXRob2RzIHVwZGF0ZTphdXRoZW50aWNhdGlvbl9tZXRob2RzIGRlbGV0ZTphdXRoZW50aWNhdGlvbl9tZXRob2RzIHJlYWQ6b3JnYW5pemF0aW9ucyB1cGRhdGU6b3JnYW5pemF0aW9ucyBjcmVhdGU6b3JnYW5pemF0aW9ucyBkZWxldGU6b3JnYW5pemF0aW9ucyBjcmVhdGU6b3JnYW5pemF0aW9uX21lbWJlcnMgcmVhZDpvcmdhbml6YXRpb25fbWVtYmVycyBkZWxldGU6b3JnYW5pemF0aW9uX21lbWJlcnMgY3JlYXRlOm9yZ2FuaXphdGlvbl9jb25uZWN0aW9ucyByZWFkOm9yZ2FuaXphdGlvbl9jb25uZWN0aW9ucyB1cGRhdGU6b3JnYW5pemF0aW9uX2Nvbm5lY3Rpb25zIGRlbGV0ZTpvcmdhbml6YXRpb25fY29ubmVjdGlvbnMgY3JlYXRlOm9yZ2FuaXphdGlvbl9tZW1iZXJfcm9sZXMgcmVhZDpvcmdhbml6YXRpb25fbWVtYmVyX3JvbGVzIGRlbGV0ZTpvcmdhbml6YXRpb25fbWVtYmVyX3JvbGVzIGNyZWF0ZTpvcmdhbml6YXRpb25faW52aXRhdGlvbnMgcmVhZDpvcmdhbml6YXRpb25faW52aXRhdGlvbnMgZGVsZXRlOm9yZ2FuaXphdGlvbl9pbnZpdGF0aW9ucyByZWFkOmNsaWVudF9jcmVkZW50aWFscyBjcmVhdGU6Y2xpZW50X2NyZWRlbnRpYWxzIHVwZGF0ZTpjbGllbnRfY3JlZGVudGlhbHMgZGVsZXRlOmNsaWVudF9jcmVkZW50aWFscyIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyJ9.rnekt_MUCNBbKN06LZA4bzy5AKCU_tFb-2GCNyvl4kZXotYJCcen2aneYeLDMdde7SpgRWLklMjtnaAr96s8jLvQJK7jaJ9AztD9DjhefDMVXjhV05DwsW_az0lqfXUzbY9FRyfKmNPCSseCeAQ7_yxbiNasr7fqFqddPPYAtuzcjNtbSbTnndDH-341QNxiU5JotIY3ngJA40ESz5HQx-lqQTI454z6I4mnszYX_uwAUa-WpQJ8xfcU9v4Y6i35jKTiXmAU96Lo1sDlwOHKM6Ffn1pd1RPkHkdTUf3ZWe4qveLD7itAizzI8KCJ3eAypdpSaSUSb8s8pfftDrOUVw");
     
     var requestOptions = {
         method: 'GET',
@@ -274,7 +279,7 @@ async function Save_User(){
             let user_id = response[i].identities[0].user_id
             let user_name = response[i].name
             console.log(user_id)
-            client.query(`INSERT INTO useraccount (auth0_id, user_name) VALUES ('${user_id}', '${user_name}');`, (err, res)=>{
+            client.query(`INSERT INTO ffootti.useraccount (auth0_id, user_name) VALUES ('${user_id}', '${user_name}');`, (err, res)=>{
                 if(err){
                     console.log(err);
                 }else{

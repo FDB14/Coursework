@@ -1,11 +1,11 @@
-const {Client} = require('pg')
+const {Client} = require('pg');
 
 const client = new Client({
     host : "localhost",
-    user : "admin",
+    user : "postgres",
     port : 5432,
-    password : "root",
-    database : "mainconnection"
+    password : `Frederick1&23`,
+    database : "fantasyfootball"
 })
 
 client.connect();
@@ -54,28 +54,28 @@ function fetchPlayerData(page){
                 }
 
                 const statObject = {
-                    team : playerSelected.statistics[0].team.name,
-                    teamicon : playerSelected.statistics[0].team.logo,
-                    appearances : playerSelected.statistics[0].games.appearences,
-                    minutes : playerSelected.statistics[0].games.minutes,
-                    rating : playerSelected.statistics[0].games.rating,
-                    goals : playerSelected.statistics[0].goals.total,
-                    assists : playerSelected.statistics[0].goals.assists,
-                    conceded : playerSelected.statistics[0].goals.conceded,
-                    passes : playerSelected.statistics[0].passes.total,
-                    tackles : playerSelected.statistics[0].tackles.total,
-                    duelswon: playerSelected.statistics[0].duels.won,
-                    dribbles : playerSelected.statistics[0].dribbles.success,
-                    foulswon : playerSelected.statistics[0].fouls.drawn,
-                    fouls : playerSelected.statistics[0].fouls.committed,
-                    yellow : playerSelected.statistics[0].cards.yellow,
-                    yellowred : playerSelected.statistics[0].cards.yellowred,
-                    red : playerSelected.statistics[0].cards.red,
-                    penwon : playerSelected.statistics[0].penalty.won,
-                    pencommited : playerSelected.statistics[0].penalty.commited,
-                    penscored : playerSelected.statistics[0].penalty.scored,
-                    penmissed : playerSelected.statistics[0].penalty.missed,
-                    position : playerSelected.statistics[0].games.position,    
+                    team : foo.team.name,
+                    teamicon : foo.team.logo,
+                    appearances : foo.games.appearences,
+                    minutes : foo.games.minutes,
+                    rating : foo.games.rating,
+                    goals : foo.goals.total,
+                    assists : foo.goals.assists,
+                    conceded : foo.goals.conceded,
+                    passes : foo.passes.total,
+                    tackles : foo.tackles.total,
+                    duelswon: foo.duels.won,
+                    dribbles : foo.dribbles.success,
+                    foulswon : foo.fouls.drawn,
+                    fouls : foo.fouls.committed,
+                    yellow : foo.cards.yellow,
+                    yellowred : foo.cards.yellowred,
+                    red : foo.cards.red,
+                    penwon : foo.penalty.won,
+                    pencommited : foo.penalty.commited,
+                    penscored : foo.penalty.scored,
+                    penmissed : foo.penalty.missed,
+                    position : foo.games.position,    
                 }
 
                 client.query(`INSERT INTO playersmain VALUES (${playerObject.id},'${playerObject.playerName}', '${playerObject.playerLast}', ${playerObject.age},'${playerObject.nationality}', '${playerObject.height}','${statObject.team}', '${statObject.teamicon}', ${statObject.appearances}, ${statObject.rating}, ${statObject.goals} , ${statObject.assists}, ${statObject.conceded}, ${statObject.passes}, ${statObject.tackles}, ${statObject.duelswon}, ${statObject.dribbles}, ${statObject.foulswon}, ${statObject.fouls}, ${statObject.yellow}, ${statObject.yellowred}, ${statObject.red}, ${statObject.penwon}, ${statObject.pencommited}, ${statObject.penscored}, ${statObject.penmissed}, ${statObject.minutes}, '${statObject.position}');`, (err, res)=>{

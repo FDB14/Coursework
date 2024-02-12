@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS public.userteam
     CONSTRAINT fk_userteam_playersmain FOREIGN KEY (player_id)
         REFERENCES public.playersmain (id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
+        ON DELETE NO ACTION
     CONSTRAINT fk_userteam_useraccount FOREIGN KEY (user_id)
         REFERENCES public.useraccount (auth0_id) MATCH SIMPLE
         ON UPDATE NO ACTION
@@ -21,3 +21,4 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.userteam
     OWNER to admin;
+
