@@ -3,7 +3,7 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
 import React, { useEffect, useState } from 'react'
 import DefenderRow from './DefenderRow';
-
+import Back from '../../components/Back'
 
 function Playerselect({params}) {
   
@@ -11,6 +11,7 @@ function Playerselect({params}) {
 
     const [defender, setDefender] = useState([{"id":"","playername":"","playerlast":"","nationality":"","age": null,"height":"","minutes":null,"goals":null,"assists":null,"rating":null,"team":""}])
     const [input, setInput] = useState('')
+    const [success, setSuccess] = useState(true)
 
     useEffect(() => {
         fetch(`http://localhost:8383/${params.slug}`).then(
@@ -47,7 +48,9 @@ function Playerselect({params}) {
         const foo = await status.status
         if(foo == 'recieved'){
             Update_User_Credit({rating : defender.rating, userId : user.sub})
+            setSuccess(true)
         }else{
+            setSuccess(false)
             return
         }
     }
@@ -89,9 +92,17 @@ function Playerselect({params}) {
     if (error) return <div>{error.message}</div>;
 
     return(
-        <div className = "flex justify-center align-middle">
-            <div className="align-middle bg-blueGray-300 text-black font-medium rounded-md m-10 outline outline-2 outline-offset-2 outline-slate-300 w-fit">    
-                <table>
+        <div className = "flex flex-col justify-center align-middle">
+            <div>
+                <Back params={params}>
+                </Back>
+            </div>
+            {
+                !success ? <div className=' text-red-500 font-extrabold text-center'>TOO MANY PLAYERS OR DUPLICATE PLAYERS</div>: <div></div> 
+            }
+
+            <div className="justify-center self-center bg-slate-200 text-black font-medium m-10 outline-offset-2 outline-slate-300 w-fit">    
+                <table className=''>
                     <thead>
                         <tr className="">
                             <th className="font-black">Name</th>
@@ -107,7 +118,7 @@ function Playerselect({params}) {
                     </thead>
                     {quickSort(defender).map((defender, index) => (
                         <tbody className="" key={index}>
-                                    <DefenderRow defender={defender} handleClick={handleClick}></DefenderRow>
+                                    <DefenderRow defender={defender} handleClick={handleClick} slug={params.slug}></DefenderRow>
                         </tbody>
                         ))}
                 </table>       

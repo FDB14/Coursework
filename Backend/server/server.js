@@ -19,13 +19,21 @@ app.use(cors())
 
 app.listen(port, () => console.log(`server has started on port: ${port}`))
 
+client.connect()
+
 app.post('/team', async (req, res) => {
     const {package} =  await req.body
     const user_id = await Get_User_Id(package)
     const data = await Send_Players_Team(user_id)
     const user_credit = await Get_User_Credit(user_id)
-    const bar = await Save_User_Score(user_id)
+    Save_User_Score(user_id)
     res.json({data : data, credit : user_credit})
+})
+
+app.post('/viewplayer', async(req, res) => {
+    const {package} = await req.body
+    const foo = await viewPlayer(package)
+    res.json({data : foo})
 })
 
 app.post('/delete', async(req, res) => {
@@ -95,7 +103,6 @@ app.post('/teamscore', async (req, res) => {
 app.post('/usercredit', async(req, res) => {
     const {package} = req.body
     const player_cost = Math.round(package.rating * 10)
-    console.log(package)
     const playerId = await Get_User_Id(package)
     Update_User_Credit(player_cost, playerId)
     if(!package){
@@ -116,7 +123,6 @@ app.get('/ranking', async(req, res) => {
     res.status(200).json({data : obj})
 })
 
-client.connect()
 
 function Update_User_Credit(cost, id){
     if(cost > 20){
@@ -142,27 +148,29 @@ function Get_User_Id(package){
 
 async function Send_Team_Info(package){
     try{
-        let response = await client.query(`INSERT INTO ffootti.userteam(player_id, user_id) VALUES(${Number(package.playerId)}, '${(Get_User_Id(package))}');`)
-
-        let res = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 4 AND position = 'Defender');`)
-        if(res.rowCount > 4){
-            await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${res.rows[0].player_id} AND position = 'Defender' AND user_id = '${Get_User_Id(package)}';`)
+        let foo = await client.query(`SELECT position, rating FROM ffootti.playersmain WHERE id = ${package.playerId}`)
+        let temp = 0
+        let pos = (foo.rows[0].position)
+        if(pos == 'Attacker'){
+            temp = 3
+        }else if(pos == 'Midfielder'){
+            temp = 3
+        }else if(pos == 'Defender'){
+            temp = 4
+        }else if(pos == 'Goalkeeper'){
+            temp = 1 
         }
 
-        let res1 = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 1 AND position = 'Goalkeeper');`)
-        if(res1.rowCount > 1){
-            await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${res1.rows[0].player_id} AND position = 'Goalkeeper' AND user_id = '${Get_User_Id(package)}';`)
-        }
-
-        let res2 = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Midfielder');`)
-        if(res2.rowCount > 3){
-            await client.query(`DELETE FROM userteam USING playersmain WHERE userteam.player_id = playersmain.id AND player_id = ${res2.rows[0].player_id} AND position = 'Midfielder' AND user_id = '${Get_User_Id(package)}';`)
-        }
+        let response = await client.query(`INSERT INTO ffootti.userteam(player_id, user_id, dateadded) VALUES(${Number(package.playerId)}, '${(Get_User_Id(package))}', ${Date.now()});`)
         
-        let res3 = await client.query(`SELECT DISTINCT * FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id IN(SELECT user_id FROM(SELECT user_id, ROW_NUMBER() OVER(PARTITION BY user_id) AS occurrences FROM ffootti.userteam) AS duplicates WHERE duplicates.occurrences > 3 AND position = 'Attacker');`)
-        if(res3.rowCount > 3){
-            await client.query(`DELETE FROM ffootti.userteam USING ffootti.playersmain WHERE ffootti.userteam.player_id = ffootti.playersmain.id AND player_id = ${res3.rows[0].player_id} AND position = 'Attacker' AND user_id = '${Get_User_Id(package)}';`)
-        }
+        let res1 = await client.query(`SELECT user_id, position, COUNT(position) FROM ffootti.userteam INNER JOIN ffootti.playersmain ON userteam.player_id = playersmain.id WHERE user_id = '${Get_User_Id(package)}' AND position = '${foo.rows[0].position}' GROUP BY user_id, position`)
+        console.log(res1.rows)
+
+
+        if(res1.rows[0].count > temp){
+            let res = await client.query(`DELETE FROM ffootti.userteam WHERE player_id = ${package.playerId} AND user_id = '${res1.rows[0].user_id}';`)
+            client.query(`UPDATE ffootti.useraccount SET user_credit = user_credit + ${Math.round((foo.rows[0].rating) * 10)} WHERE auth0_id = '${userId}'`)
+            }
 
         return response
     }
@@ -190,30 +198,6 @@ async function Get_Players_From_Db(position){
     return (response.rows)
 }
 
-async function calc_score(id){
-    let score = 0
-    let response = await client.query(`SELECT appearances, goals, assists, passes, conceded, yellow, yellowred, red, minutes, duelswon, penwon, penscored, penmissed, pencommited FROM ffootti.userteam INNER JOIN ffootti.playersmain ON player_id = id WHERE user_id = '${id}'`)
-    response.rows.map((player) => {
-        if(player.appearances > 0){
-            score += player.minutes / 30
-            score += 5 * player.goals
-            score += 3 * player.assists
-            score += player.passes / 30
-            score -= player.conceded / 4
-            score -= 2 * player.yellow
-            score -= 2 * player.yellowred
-            score -= 5 * player.red
-            score += player.duelswon
-            score += player.penwon
-            score -= player.penscored
-            score += player.penmissed
-            score -= player.pencommited
-        }
-    })
-    console.log(score)
-    return(Math.round(score))
-}
-
 async function Get_User_Score(id){
     let response = await client.query(`SELECT userscore FROM ffootti.useraccount WHERE auth0_id = '${id}';`)
     return response.rows[0].userscore
@@ -221,7 +205,6 @@ async function Get_User_Score(id){
 
 async function Get_All_User_Score(){
     let response = await client.query(`SELECT userscore, userid, auth0_id, user_name FROM ffootti.useraccount;`)
-    console.log(response)
     return response.rows
 }
 
@@ -278,15 +261,35 @@ async function Save_User(){
         for(let i = 0; i < response.length; i++){
             let user_id = response[i].identities[0].user_id
             let user_name = response[i].name
-            console.log(user_id)
             client.query(`INSERT INTO ffootti.useraccount (auth0_id, user_name) VALUES ('${user_id}', '${user_name}');`, (err, res)=>{
                 if(err){
                     console.log(err);
                 }else{
-                    console.log(`user's id inserted successfully ${i+1}`)
+                    return
                 }
             })
         }
     })
     .catch(error => console.log('error', error));
 }
+
+async function viewPlayer(params){
+    try{
+        const response = await client.query(`SELECT * FROM ffootti.playersmain WHERE id = ${params}`)
+        return response.rows
+    }catch(error){
+        console.error(error)
+    }
+}
+
+async function updatePlayersPoints(){
+    try{
+        let temp = await client.query(`SELECT * FROM ffootti.userteam;`)
+        console.log(temp.rows)
+        await client.query(`ALTER TABLE dated_playerscores ADD COLUMN time_${Date.now()} bigint;`)
+    }catch(err){
+        console.error(err)
+    }
+}
+
+updatePlayersPoints()

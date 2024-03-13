@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import Login from './Login';
 import { useUser } from '@auth0/nextjs-auth0/client';
 
-
 function Head1() {
 
     const { user, isLoading } = useUser()
@@ -19,13 +18,13 @@ function Head1() {
 
   return (
     <>
-    <div className={`flex duration-[1300ms] ${transClass ? "w-[5vw]" : "w-[100vw]"}`}>
-    <div className={`duration-[1300ms] h-screen ${transClass ? "w-[10vw]" : "w-[25vw]"} bg-col1 text-center flex justify-center items-center font-body z-50 hover:text-opacity-50`}>
-        <div className='-rotate-90 text-6xl text-white font-extrabold '>
-            <button onClick={toggle}>
-                {transClass ? "Menu" : "FantasyFootball"}
+    <div className={`flex duration-[700ms] ${transClass ? "w-[5vw]" : "w-[100vw]"}`}>
+    <div className={`transition-width h-screen duration-1000 ${transClass ? "w-[10vw]" : "w-[25vw]"} bg-col1 text-center flex justify-center items-center font-body z-50 hover:text-opacity-50`}>
+            <button onClick={toggle} className='h-full w-full'>
+                <div className='-rotate-90 text-6xl text-[#F4F6F6] font-extrabold text-center transition-none m-auto'>
+                    {transClass ? "Menu" : "FantasyFootball"}
+                </div>
             </button>
-        </div>
     </div>
     <div className={`duration-[1000ms] h-screen w-[25vw] bg-col2 text-center ${transClass ? "-translate-x-[25vw]" : ''} z-40 flex justify-center items-center font-body hover:font-Garamond transition`}>
         <div className='-rotate-90 h-fit text-6xl text-black font-extrabold '>

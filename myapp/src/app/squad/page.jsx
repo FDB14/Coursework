@@ -1,8 +1,6 @@
 'use client'
 
-import NavBar1 from "../components/NavBar1"
 import Pitch from '../components/Pitch'
-import close from '../img/Close.svg';
 import Image from "next/image";
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Head1 from "../components/Head1";
