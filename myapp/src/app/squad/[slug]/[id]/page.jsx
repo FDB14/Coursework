@@ -12,7 +12,7 @@ function page({params}) {
     useEffect(() => {
         makeRequest(params.id)
         .then(response => {return response.data[0]})
-        .then(response => setData(response))
+        .then(response =>  setData(response))
     }
     ,[])
 
@@ -34,20 +34,20 @@ function page({params}) {
     }
 
   return (
-    <div className='font-semibold flex justify-center items-center my-auto h-screen '>
+    <div className=' font-medium flex justify-center items-center my-auto h-screen '>
         <div>
             <Back params={params}></Back>
         </div>
 
         <div className='flex-row flex gap-5'>
 
-        <div className=' flex flex-row'>
-            <img className='rounded-lg' alt='' src={data.photo}></img>
-            <img alt='' src={data.teamicon}></img>
+        <div className='flex flex-row '>
+            <img className='rounded-lg w-full h-full' alt='' src={data.photo}></img>
+            <img  className='w-full h-full' alt='' src={data.teamicon}></img>
         </div>
-        <div>
+        <div className='flex flex-col ml-5'>
             <div>
-                <div>
+                <div className='font-black'>
                 Name: {data.playername}
                 </div>
                 <div>
@@ -71,8 +71,8 @@ function page({params}) {
             </div>
         </div>
         <div>
-            <div>
-                Attack:
+            <div className=' font-black'>
+                Performance:
             </div>
             <div>
                 Goals: {data.goals}
@@ -88,7 +88,7 @@ function page({params}) {
             </div>
         </div>
         <div>
-            <div>
+            <div className='font-black'>
                 Discipline:
             </div>
             <div>

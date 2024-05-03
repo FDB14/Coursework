@@ -1,12 +1,7 @@
 'use client'
 
 import { useUser } from '@auth0/nextjs-auth0/client';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
-import noEntry from '../img/rect15.svg'
-import goal from '../img/goal.svg'
-import shield from '../img/secure.svg'
-
 
 function Pitch({id}) {
 
@@ -38,8 +33,10 @@ function Pitch({id}) {
                 )
             }
             ).then(response => {
+                console.log(response)
                 return response.json()
             }).then(data => {
+
                 setCredit(data.credit[0].user_credit)
                 data = data.data
                 return data
@@ -112,7 +109,7 @@ function Pitch({id}) {
                             <div className='text-green-600 '>{forwards[0] ? `Rating: ${Math.round((forwards[0].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={forwards[0] ? forwards[0].photo : ''} alt=''></img>
                             </div>
-                            <a href='/squad'><button onClick={forwards[0] ? () => {Remove_Player(forwards[0].id, forwards[0].rating)} : null}>{forwards[0] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={forwards[0] ? () => {Remove_Player(forwards[0].id, forwards[0].rating)} : null}>{forwards[0] ? "Remove" : null}</button></a>
                         </div>
                         </div>
                          
@@ -121,14 +118,14 @@ function Pitch({id}) {
                             <div className=''>{forwards[1] ? forwards[1].nationality : ''}</div>
                             <div className='text-green-600 '>{forwards[1] ? `Rating: ${Math.round((forwards[1].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={forwards[1] ? forwards[1].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={forwards[1] ? () => {Remove_Player(forwards[1].id, forwards[1].rating)} : null}>{forwards[1] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={forwards[1] ? () => {Remove_Player(forwards[1].id, forwards[1].rating)} : null}>{forwards[1] ? "Remove" : null}</button></a>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2  text-black text-center font-bold flex flex-col gap-1 bg-white bg-opacity-95 hover:bg-opacity-80'>
                             <a href={forwards[2] ? `/squad/forward/${forwards[2].id}` : 'squad/forward'}><div className='bg-teal-500 text-white rounded-t-md max-h-6 overflow-hidden'>{forwards[2] ? forwards[2].playername : 'fwd'}</div></a>
                             <div className=''>{forwards[2] ? forwards[2].nationality : ''}</div>
                             <div className='text-green-600 '>{forwards[2] ? `Rating: ${Math.round((forwards[2].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={forwards[2] ? forwards[2].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={forwards[2] ? () => {Remove_Player(forwards[2].id, forwards[2].rating)} : null}>{forwards[2] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={forwards[2] ? () => {Remove_Player(forwards[2].id, forwards[2].rating)} : null}>{forwards[2] ? "Remove" : null}</button></a>
                         </div>
                     </div>
                     <div className='flex flex-row pl-20'>
@@ -137,21 +134,21 @@ function Pitch({id}) {
                             <div className=''>{midfielders[0] ? midfielders[0].nationality : ''}</div>
                             <div className='text-green-600 '>{midfielders[0] ? `Rating: ${Math.round((midfielders[0].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={midfielders[0] ? midfielders[0].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={midfielders[0] ? () => {Remove_Player(midfielders[0].id, midfielders[0].rating)} : null}>{midfielders[0] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={midfielders[0] ? () => {Remove_Player(midfielders[0].id, midfielders[0].rating)} : null}>{midfielders[0] ? "Remove" : null}</button></a>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2  text-black text-center font-bold flex flex-col gap-1 bg-white bg-opacity-95 hover:bg-opacity-80'>
                             <a href={midfielders[1] ? `/squad/midfield/${midfielders[1].id}` : '/squad/midfield'}><div className='bg-indigo-500 text-white rounded-t-md max-h-6 overflow-hidden'>{midfielders[1] ? midfielders[1].playername : 'mid'}</div></a>
                             <div className=''>{midfielders[1] ? midfielders[1].nationality : ''}</div>
                             <div className='text-green-600 '>{midfielders[1] ? `Rating: ${Math.round((midfielders[1].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={midfielders[1] ? midfielders[1].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={midfielders[1] ? () => {Remove_Player(midfielders[1].id, midfielders[1].rating)} : null}>{midfielders[1] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={midfielders[1] ? () => {Remove_Player(midfielders[1].id, midfielders[1].rating)} : null}>{midfielders[1] ? "Remove" : null}</button></a>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2  text-black text-center font-bold flex flex-col gap-1 bg-white bg-opacity-95 hover:bg-opacity-80'>
                             <a href={midfielders[2] ? `/squad/midfield/${midfielders[2].id}` : '/squad/midfield'}><div className='bg-indigo-500 text-white rounded-t-md max-h-6 overflow-hidden'>{midfielders[2] ? midfielders[2].playername : 'mid'}</div></a>
                             <div className=''>{midfielders[2] ? midfielders[2].nationality : ''}</div>
                             <div className='text-green-600 '>{midfielders[2] ? `Rating: ${Math.round((midfielders[2].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={midfielders[2] ? midfielders[2].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={midfielders[2] ? () => {Remove_Player(midfielders[2].id, midfielders[2].rating)} : null}>{midfielders[2] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={midfielders[2] ? () => {Remove_Player(midfielders[2].id, midfielders[2].rating)} : null}>{midfielders[2] ? "Remove" : null}</button></a>
                         </div>
                     </div>
                     <div className='flex flex-row'>
@@ -160,28 +157,28 @@ function Pitch({id}) {
                             <div className=''>{defenders[0] ? defenders[0].nationality : ''}</div>
                             <div className='text-green-600 '>{defenders[0] ? `Rating: ${Math.round((defenders[0].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={defenders[0] ? defenders[0].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={defenders[0] ? () => {Remove_Player(defenders[0].id, defenders[0].rating)} : null}>{defenders[0] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={defenders[0] ? () => {Remove_Player(defenders[0].id, defenders[0].rating)} : null}>{defenders[0] ? "Remove" : null}</button></a>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2  text-black text-center font-bold flex flex-col gap-1 bg-white bg-opacity-95 hover:bg-opacity-80'>
                             <a href={defenders[1] ? `/squad/defender/${defenders[1].id}` : '/squad/defender'}><div className='bg-fuchsia-500 text-white rounded-t-md max-h-6 overflow-hidden'>{defenders[1] ? defenders[1].playername : 'def'}</div></a>
                             <div className=''>{defenders[1] ? defenders[1].nationality : ''}</div>
                             <div className='text-green-600 '>{defenders[1] ? `Rating: ${Math.round((defenders[1].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={defenders[1] ? defenders[1].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={defenders[1] ? () => {Remove_Player(defenders[1].id, defenders[1].rating)} : null}>{defenders[1] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={defenders[1] ? () => {Remove_Player(defenders[1].id, defenders[1].rating)} : null}>{defenders[1] ? "Remove" : null}</button></a>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2  text-black text-center font-bold flex flex-col gap-1 bg-white bg-opacity-95 hover:bg-opacity-80'>
                             <a href={defenders[2] ? `/squad/defender/${defenders[2].id}` : '/squad/defender'}><div className='bg-fuchsia-500 text-white rounded-t-md max-h-6 overflow-hidden'>{defenders[2] ? defenders[2].playername : 'def'}</div></a>
                             <div className=''>{defenders[2] ? defenders[2].nationality : ''}</div>
                             <div className='text-green-600 '>{defenders[2] ? `Rating: ${Math.round((defenders[2].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={defenders[2] ? defenders[2].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={defenders[2] ? () => {Remove_Player(defenders[2].id, defenders[2].rating)} : null}>{defenders[2] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={defenders[2] ? () => {Remove_Player(defenders[2].id, defenders[2].rating)} : null}>{defenders[2] ? "Remove" : null}</button></a>
                         </div>
                         <div className='w-36 h-48 rounded-md m-2  text-black text-center font-bold flex flex-col gap-1 bg-white bg-opacity-95 hover:bg-opacity-80'>
                             <a href={defenders[3] ? `/squad/defender/${defenders[3].id}` : '/squad/defender'}><div className='bg-fuchsia-500 text-white rounded-t-md max-h-6 overflow-hidden'>{defenders[3] ? defenders[3].playername : 'def'}</div></a>
                             <div className=''>{defenders[3] ? defenders[3].nationality : ''}</div>
                             <div className='text-green-600 '>{defenders[3] ? `Rating: ${Math.round((defenders[3].rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={defenders[3] ? defenders[3].photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={defenders[3] ? () => {Remove_Player(defenders[3].id, defenders[3].rating)} : null}>{defenders[3] ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={defenders[3] ? () => {Remove_Player(defenders[3].id, defenders[3].rating)} : null}>{defenders[3] ? "Remove" : null}</button></a>
                         </div>
                     </div>
                     <div className='flex flex-row pl-60'>
@@ -190,7 +187,7 @@ function Pitch({id}) {
                             <div className=''>{goalkeepers ? goalkeepers.nationality : ''}</div>
                             <div className='text-green-600 '>{goalkeepers ? `Rating: ${Math.round((goalkeepers.rating)*10)}` : ''}</div>
                             <div className='mx-auto'><img className='h-16 rounded-md' src={goalkeepers ? goalkeepers.photo : ''} alt=''></img></div>
-                            <a href='/squad'><button onClick={goalkeepers ? () => {Remove_Player(goalkeepers.id, goalkeepers.rating)} : null}>{goalkeepers ? "Remove" : null}</button></a>
+                            <a href='/squad' className='w-fit mx-auto'><button className='w-fit mx-auto' onClick={goalkeepers ? () => {Remove_Player(goalkeepers.id, goalkeepers.rating)} : null}>{goalkeepers ? "Remove" : null}</button></a>
                         </div>
                     </div>
                 </div>

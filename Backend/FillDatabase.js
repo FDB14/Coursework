@@ -45,11 +45,28 @@ class ADD_PLAYERS {
     }
 
     async putPlayers(foo, bar) {
-        try{
-            client.query(`INSERT INTO ffootti.playersmain(id, playername, playerlast, age, nationality, height, team, teamicon, appearances, rating, goals, assists, conceded, passes, tackles, duelswon, dribbles, foulswon, fouls, yellow, yellowred, red, penwon, pencommited, penscored, penmissed, minutes, position, photo) VALUES (${foo.id}, '${foo.name}', '${foo.lastname}', ${foo.age}, '${foo.nationality}', '${foo.height}', '${bar.team.name}', '${bar.team.logo}', ${bar.games.appearences}, ${bar.games.rating}, ${bar.goals.total}, ${bar.goals.assists}, ${bar.goals.conceded}, ${bar.passes.total}, ${bar.tackles.total}, ${bar.duels.total}, ${bar.dribbles.success}, ${bar.fouls.drawn}, ${bar.fouls.committed}, ${bar.cards.yellow}, ${bar.cards.yellowred}, ${bar.cards.red}, ${bar.penalty.won}, ${bar.penalty.commited}, ${bar.penalty.scored}, ${bar.penalty.missed}, ${bar.games.minutes}, '${bar.games.position}', '${foo.photo}') ON CONFLICT (id) DO UPDATE SET playername = '${foo.name}', playerlast = '${foo.lastname}', age = ${foo.age}, nationality = '${foo.nationality}', height = '${foo.height}', team = '${bar.team.name}', teamicon = '${bar.team.logo}', appearances = ${bar.games.appearences}, rating = ${bar.games.rating}, goals= ${bar.goals.total}, assists = ${bar.goals.assists}, conceded = ${bar.goals.conceded}, passes = ${bar.passes.total}, tackles = ${bar.tackles.total}, duelswon = ${bar.duels.total}, dribbles = ${bar.dribbles.success}, foulswon = ${bar.fouls.drawn}, fouls = ${bar.fouls.committed}, yellow = ${bar.cards.yellow}, yellowred = ${bar.cards.yellowred}, red = ${bar.cards.red}, penwon = ${bar.penalty.won}, pencommited = ${bar.penalty.commited}, penscored = ${bar.penalty.scored}, penmissed = ${bar.penalty.missed}, minutes = ${bar.games.minutes}, position = '${bar.games.position}', photo = '${foo.photo}'`);
-        }catch(error){
-            console.error(error);
-        }
+        let playerName = ""
+        let playerLast = ""
+        let nationality = ""
+            if((foo.name).includes(";") || (foo.name).includes("'") || (foo.nationality).includes("'")){
+                playerName = (foo.name).replace(/[;'",._]/g, '');
+                playerLast = (foo.lastname).replace(/[;'",._]/g, '');
+                nationality = (foo.nationality).replace(/[;'",._]/g, '');
+                console.log('working' + '' + `${playerName}`);
+            }else{
+                playerName = foo.name
+                console.log(`not working ${playerName}`)
+                playerLast = foo.lastname
+                nationality = foo.nationality
+            }
+            client.query(`INSERT INTO ffootti.playersmain(id, playername, playerlast, age, nationality, height, team, teamicon, appearances, rating, goals, assists, conceded, passes, tackles, duelswon, dribbles, foulswon, fouls, yellow, yellowred, red, penwon, pencommited, penscored, penmissed, minutes, position, photo) VALUES (${foo.id}, '${(playerName)}', '${playerLast}', ${foo.age}, '${nationality}', '${foo.height}', '${bar.team.name}', '${bar.team.logo}', ${bar.games.appearences}, ${bar.games.rating}, ${bar.goals.total}, ${bar.goals.assists}, ${bar.goals.conceded}, ${bar.passes.total}, ${bar.tackles.total}, ${bar.duels.total}, ${bar.dribbles.success}, ${bar.fouls.drawn}, ${bar.fouls.committed}, ${bar.cards.yellow}, ${bar.cards.yellowred}, ${bar.cards.red}, ${bar.penalty.won}, ${bar.penalty.commited}, ${bar.penalty.scored}, ${bar.penalty.missed}, ${bar.games.minutes}, '${bar.games.position}', '${foo.photo}') ON CONFLICT (id) DO UPDATE SET playername = '${playerName}', playerlast = '${playerLast}', age = ${foo.age}, nationality = '${nationality}', height = '${foo.height}', team = '${bar.team.name}', teamicon = '${bar.team.logo}', appearances = ${bar.games.appearences}, rating = ${bar.games.rating}, goals= ${bar.goals.total}, assists = ${bar.goals.assists}, conceded = ${bar.goals.conceded}, passes = ${bar.passes.total}, tackles = ${bar.tackles.total}, duelswon = ${bar.duels.total}, dribbles = ${bar.dribbles.success}, foulswon = ${bar.fouls.drawn}, fouls = ${bar.fouls.committed}, yellow = ${bar.cards.yellow}, yellowred = ${bar.cards.yellowred}, red = ${bar.cards.red}, penwon = ${bar.penalty.won}, pencommited = ${bar.penalty.commited}, penscored = ${bar.penalty.scored}, penmissed = ${bar.penalty.missed}, minutes = ${bar.games.minutes}, position = '${bar.games.position}', photo = '${foo.photo}'`), (err, res) => {
+                if(err){
+                    console.error(err)
+                }else{
+                    console.log(res)
+                }
+            }
+
     }
 }
 

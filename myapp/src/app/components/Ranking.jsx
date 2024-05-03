@@ -1,14 +1,13 @@
 import React from 'react'
 import { useEffect, useState } from 'react'
 import { useUser } from '@auth0/nextjs-auth0/client'
-import { setUncaughtExceptionCaptureCallback } from 'process';
 import RankingComp from './RankingComp';
 
 function Ranking() {
 
     const { user, error, isLoading } = useUser();
 
-    const [scores, setScores] = useState([{"userscore": null, "userid": 107}]);
+    const [scores, setScores] = useState([]);
 
     useEffect(() => {
         fetch("http://localhost:8383/ranking").then(

@@ -1,7 +1,6 @@
 'use client'
 
 import Head1 from "../components/Head1";
-import NavBar2 from "../components/NavBar2"
 import PlayerScore from "../components/PlayerScore"
 import Ranking from "../components/Ranking"
 import { useUser } from '@auth0/nextjs-auth0/client';
